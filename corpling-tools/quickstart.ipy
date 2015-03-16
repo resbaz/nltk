@@ -1,0 +1,12 @@
+ #!/anaconda/bin/ipython
+
+# A quickstart to show basic functionality of the tools
+
+def interroplot(path, query):
+    import os
+    """Quickstart combining interrogator and plotter"""
+    for func in [f for f in os.listdir('corpling_tools') if f.endswith(".ipy")]:
+        %run corpling_tools/$func
+    quickstart = interrogator(path, '-t', query)
+    plotter(str(query), quickstart.results, fract_of = quickstart.totals)
+
