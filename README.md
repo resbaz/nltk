@@ -1,15 +1,21 @@
 # Data Carpentry with NLTK and IPython
 
 <img style="float:left" src="http://ipython.org/_static/IPy_header.png" />
-<br><br>
+<br>
 
 [![Join the chat at https://gitter.im/resbaz/resbaz](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/resbaz/resbaz?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is the repository for teaching materials and additional resources used by Research Platforms Services to teach *Python*, *IPython* and the *Natural Language Toolkit* (*NLTK*).
 
-All the materials used in NLTK workshops are in this repository. In fact, cloning this repository will be our first activity together as a group. The materials are always evolving, and pull requests are always welcome.
+All the materials used in NLTK workshops are in this repository. In fact, cloning this repository will be our first activity together as a group. To do that, just open your terminal and type/paste:
 
-Below is a basic overview of the lesson plan. You can click the headings to view the IPython Notebooks we'll be using in each sessions.
+```shell
+git clone https://github.com/resbaz/nltk.git
+```
+
+You can then open `session-1.ipynb` with IPython to begin.
+
+Below is a basic overview of the lesson plan. You can click the headings to view the IPython Notebooks we'll be using in each sessions. The materials are always evolving, and pull requests are always welcome.
 
 ## [Session 1: Orientation](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/student-notebooks/session-1.ipynb)
 
