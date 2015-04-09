@@ -3,6 +3,8 @@
 <img style="float:left" src="http://ipython.org/_static/IPy_header.png" />
 <br><br>
 
+[![Join the chat at https://gitter.im/resbaz/resbaz](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/resbaz/resbaz?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the repository for teaching materials and additional resources used by Research Platforms Services to teach *Python*, *IPython* and the *Natural Language Toolkit* (*NLTK*).
 
 All the materials used in NLTK workshops are in this repository. In fact, cloning this repository will be our first activity together as a group. The materials are always evolving, and pull requests are always welcome.
