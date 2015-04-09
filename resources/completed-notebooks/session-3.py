@@ -10,7 +10,7 @@
 
 # <markdowncell>
 #
-# In this lesson, we investigate a fully-parsed version of the Fraser Corpus. We do this using purpose-built tools.
+# In this lesson, we investigate a fully-parsed version of the Fraser Corpus. We do this using a set of purpose-built tools called `corpkit`.
 
 # In the first part of the session, we will go through how to use each of the tools. Later, you'll be able to use the tools to navigate the data and visualise results in any way you like.
 
@@ -18,9 +18,27 @@
 
 # If you plan to work more with parsed corpora later, it's definitely worthwhile to learn the Tregex syntax in detail. For now, though, we'll use simple queries, and explain the query construction syntax as we go.
 
-# Before we get started, we have to install Java, as some of our tools rely on some Java code. You'll very likely have Java installed on your local machine, but we need it on the cloud. To make it work, you should run the following line of code in the cloud Terminal:
+# Before we get started, we let's import some of the usual suspects:
 
-#      sudo yum install java
+# <codecell>
+import sys
+import nltk
+from IPython.display import display, clear_output
+sys.path.append("/usr/lib/python2.7/site-packages/")
+%matplotlib inline
+
+# <markdowncell>
+# Next, we have to install Java, as some of the `corpkit` tools rely on Java code. You'll very likely have Java installed on your local machine, but we need it on the cloud. To make it work, run the following:
+
+# <codecell>
+! yum -y install java
+clear_output()
+
+# <markdowncell>
+# Now, let's download and install `corpkit`:
+
+# <codecell>
+! pip install corpkit
 
 # <markdowncell>
 # OK, that's out of the way. Next, let's import the functions we'll be using to investigate the corpus. These functions have been designed specifically for our investigation, but they will work with any parsed dataset.
@@ -42,13 +60,11 @@
 
 # We can import them using IPython Magic:
 
+
 # <codecell>
 import os # for joining paths
 from IPython.display import display, clear_output # for clearing huge lists of output
 # import functions to be used here:
-%run corpling_tools/interrogator.ipy
-%run corpling_tools/resbazplotter.ipy
-%run corpling_tools/additional_tools.ipy
 
 # <markdowncell>
 # We also need to set the path to our corpus as a variable. If you were using this interface for your own corpora, you would change this to the path to your data.
