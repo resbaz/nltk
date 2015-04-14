@@ -6,20 +6,49 @@
 
 def searchtree(tree, query):
     "Searches a tree with Tregex and returns matching terminals"
-    ! echo "$tree" > "tmp.tree"
+        # check if we are in ipython
+    import os
+    try:
+        get_ipython().getoutput()
+    except TypeError:
+        have_ipython = True
+    except NameError:
+        import subprocess
+        have_ipython = False
+    fo = open('tree.tmp',"w")
+    fo.write(tree + '\n')
+    fo.close()
+    if have_ipython:
+        tregex_command = 'tregex.sh -o -t \'%s\' tree.tmp 2>/dev/null | grep -vP \'^\s*$\'' % query
+        result = get_ipython().getoutput(tregex_command)
+    else:
+        tregex_command = ["tregex.sh", "-o", "-t", '%s' % query, "tree.tmp"]
+        FNULL = open(os.devnull, 'w')
+        result = subprocess.check_output(tregex_command, stderr=FNULL)
+        result = os.linesep.join([s for s in result.splitlines() if s]).split('\n')
     tregex_command = 'sh ./tregex.sh -o -t \'' + query + '\' tmp.tree 2>/dev/null | grep -vP \'^\s*$\''
-    result = !$tregex_command
-    ! rm "tmp.tree"
+    os.remove("tmp.tree")
     return result
 
 def quicktree(sentence):
     """Parse a sentence and return a visual representation in IPython"""
+    import os
     from nltk import Tree
     from nltk.draw.util import CanvasFrame
     from nltk.draw import TreeWidget
     from stat_parser import Parser
-    from IPython.display import display
-    from IPython.display import Image
+    try:
+        from IPython.display import display
+        from IPython.display import Image
+    except:
+        pass
+    try:
+        get_ipython().getoutput()
+    except TypeError:
+        have_ipython = True
+    except NameError:
+        import subprocess
+        have_ipython = False
     parser = Parser()
     parsed = parser.parse(sentence)
     cf = CanvasFrame()
@@ -27,13 +56,19 @@ def quicktree(sentence):
     cf.add_widget(tc,10,10) # (10,10) offsets
     cf.print_to_file('tree.ps')
     cf.destroy()
-    ! convert tree.ps tree.png
-    ! rm tree.ps
+    if have_ipython:
+        tregex_command = 'convert tree.ps tree.png'
+        result = get_ipython().getoutput(tregex_command)
+    else:
+        tregex_command = ["convert", "tree.ps", "tree.png"]
+        result = subprocess.check_output(tregex_command)    
+    os.remove("tree.ps")
     return Image(filename='tree.png')
-    ! rm tree.png
+    os.remove("tree.png")
 
 def parse_metadata(text):
     "Parses Fraser Corpus metadata"
+    # should we make compatible with files, whole texts?
     metadata = {}
     for line in text.split('\r\n'):
         if not line:
@@ -74,3 +109,4 @@ def structure_corpus(oldpath, newpath):
         # write the content portion, without metadata
         fo.write(data[1])
         fo.close()
+    
