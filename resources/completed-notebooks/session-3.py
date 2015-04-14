@@ -89,7 +89,7 @@ melbtree = (r'(ROOT (S (NP (NNP Melbourne)) (VP (VBZ has) (VP (VBN been) (VP (VB
 # Notice that an OCR error caused a parsing error. Oh well. Here's a visual representation, drawn with NLTK:
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/melbtree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/melbtree.png" />
 # <br>
 # <markdowncell>
 # The data is annotated at word, phrase and clause level. Embedded here is an elaboration of the meanings of tags *(ask Daniel if you need some clarification!)*:
@@ -180,7 +180,7 @@ searchtree(melbtree, query)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/colombotree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/colombotree.png" />
 # <br>
 
 # <codecell>
@@ -194,7 +194,7 @@ colombotree = r'(ROOT (S (NP (PRP We)) (VP (VBP continue) (S (VP (TO to) (VP (VB
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/wooltree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/wooltree.png" />
 # <br>
 
 # <codecell>
@@ -484,7 +484,7 @@ conc(os.path.join(path,'1954'), r'/(?i)\baustral.?/', random = 5, window = 30, t
 # Here's one visualisation of it. We're concerned with the two left-hand columns. Each level is an abstraction of the one below it.
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/interrogator/sfl_corpling/master/cmc-2014/images/egginsfixed.jpg" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/egginsfixed.jpg" />
 # <br>
 
 # Transitivity choices include fitting together configurations of:
@@ -671,7 +671,7 @@ plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/options.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/options.png" />
 # <br>
 
 # <codecell>
