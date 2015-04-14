@@ -13,11 +13,11 @@ All the materials used in NLTK workshops are in this repository. In fact, clonin
 git clone https://github.com/resbaz/nltk.git
 ```
 
-You can then open `session-1.ipynb` with IPython to begin.
+Though we'll be working with blank notebooks in our training sessions, everthing we cover lives as a complete notebook in the `resources/completed-notebooks` directory. These notebooks are useful for remembering or extending what you learned in during training. Alternatively, they may be useful for those who cannot attend our sessions face-to-face.
 
-Below is a basic overview of the lesson plan. You can click the headings to view the IPython Notebooks we'll be using in each sessions. The materials are always evolving, and pull requests are always welcome.
+Below is a basic overview of the four-session lesson plan. You can click the headings to view complete versions of the IPython Notebooks we'll be using in each sessions. The materials are always evolving, and pull requests are always welcome.
 
-## [Session 1: Orientation](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/student-notebooks/session-1.ipynb)
+## [Session 1: Orientation](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-1.ipynb)
 
 In this session, you will learn how to use IPython Notebooks, as well as how to complete basic tasks with Python/NLTK. 
 
@@ -30,7 +30,7 @@ In this session, you will learn how to use IPython Notebooks, as well as how to 
 * Plot key terms in the inaugural addresses longitudinally
 * Discussion: *Why might we want to use NLTK? What are its limitations?*
 
-## [Session 2: Functions, lists and variables](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/student-notebooks/session-2.ipynb)
+## [Session 2: Functions, lists and variables](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-2.ipynb)
 
 In this session, we devote more time to the fundamentals of Python, learning how to create and manipulate different kinds of data. In the first half of the session, we discuss:
 
@@ -43,11 +43,11 @@ In the second half of the session, we put our existing skills to work in order t
 * Sentence splitting
 * Tokenisation
 * Keywords
-* n-Grams
+* n-grams
 * Collocates
 * Concordancing
 
-## [Session 3: The Fraser Corpus](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/student-notebooks/session-3.ipynb)
+## [Session 3: The Fraser Corpus](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-3.ipynb)
 
 By this point, we're familiar with what NLTK is and how to use it. It's time to put it to work on a novel dataset. We've chosen a [corpus of Malcolm Fraser's speeches](http://www.unimelb.edu.au/malcolmfraser/speeches/electorate/). In this session, we begin by:
 
@@ -66,7 +66,7 @@ Next, we'll use some purpose-built tools called [`corpkit`](https://www.github.c
 
 We'll leave some time at the end of this session for exploring the Fraser Corpus, and for discussing what we found.
 
-## [Session 4: Getting the most out of what we've learned](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/student-notebooks/session-4.ipynb)
+## [Session 4: Getting the most out of what we've learned](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-4.ipynb)
 
 So, we've learned some great skills! But, we need to know how to put these skills into practice within our own work. In this final session, we discuss:
 
