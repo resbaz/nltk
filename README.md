@@ -70,6 +70,8 @@ We'll leave some time at the end of this session for exploring the Fraser Corpus
 
 So, we've learned some great skills! But, we need to know how to put these skills into practice within our own work. In this final session, we discuss:
 
+
+* What kind(s) of data we're all working with
 * Storing your data and results
 * Using what you've learned here
 * Developing your skills further
