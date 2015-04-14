@@ -1,3 +1,4 @@
 .DS_Store
 *.pyc
 resources/completed-notebooks/.ipynb_checkpoints/
+.ipynb_checkpoints/
