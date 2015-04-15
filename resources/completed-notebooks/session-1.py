@@ -7,7 +7,6 @@
 # <headingcell level=1>
 # Session 1: Orientation
 
-
 # <markdowncell>
 # <br>
 # Welcome to the *IPython Notebook*. Through this interface, you'll be learning a lot of things:
@@ -138,7 +137,6 @@ text2.common_contexts(["monstrous", "very"])  # this function takes two argument
 
 # <codecell>
 import numpy
-% matplotlib inline # allow visuals to show up in this interface---see note below
 text1.dispersion_plot(["whale"])
 
 # <markdowncell>
@@ -192,7 +190,7 @@ if condition is True:
 # Significant Whitespace
 
 # <markdowncell>
-# One thing that makes Python unique is that whitespace at the start of the line (use a tab for consistency!) is meaningful. 
+# One thing that makes Python unique is that whitespace at the start of the line (use four spaces for consistency!) is meaningful. 
 # In many other languages, whitespace at the start of lines is simply a readability convention.
 
 # <codecell>
@@ -203,18 +201,7 @@ if string == 'user':
 print 'Phew, fixed.'
 
 # <markdowncell>
-# So, whitespace tells both Python and human readers where things start and stop. You should be able to get different kinds of output depending on how you indent the code below.
-
-# <codecell>
-# \n means 'newline character'---i.e. print a line break
-print 'Python\nis\n'
-for i in ['very', 'really', 'truly']:  # repeat three times, quite arbitrarily
-    print i + '\n'
-    if i is 'truly':  # nested conditional
-        print 'interesting!'
-    else:
-        print 'complicated!'
- print 'day.'  # at present, this occurs after the three repetitions.
+# So, whitespace tells both Python and human readers where things start and stop.
 
 # <headingcell level=3>
 # Input/Output Types
@@ -239,7 +226,7 @@ for i in ['very', 'really', 'truly']:  # repeat three times, quite arbitrarily
 # Line 4 actually tells us what the error was - that's what we would have googled if we were looking for a solution.
 
 # <markdowncell>
-# You can determine the type of data stored in a variable with *type()*. Below are the most common types. Note how quotation marks, and brackets are used to distinguish between them when writing code.
+# You can determine the type of data stored in a variable with *type()*. Here are some of the most common types. Note how quotation marks, and brackets are used to distinguish between them when writing code.
 
 # <codecell>
 var = 'A string'
@@ -259,8 +246,8 @@ print type(var)
 # Sometimes you can sometimes easily convert between types.
 
 # <codecell>
-secondnumber = '2'
-1 + int(secondnumber)
+num = '2'
+1 + int(num)
 
 # <markdowncell>
 # ... and sometimes it's not so easy:
@@ -274,6 +261,8 @@ print more_adjectives
 # Basic syntax
 
 # <markdowncell>
+# **Only do this section if we have time!!**
+
 # Python has *variables* and *commands*. Commands may have *arguments* and *options*.
 
 # > IPython highlights your code automatically, which can help you read it faster and spot problems.
@@ -304,15 +293,9 @@ print answer
 # You can get more information on IPython, including how to install it on your own machine, at the [IPython Homepage](http://ipython.org).
 
 # <markdowncell>
-# So, the last thing to do in this session is to discuss what you all make of IPython. Can anyone see potential for Python in their own research? What are you working on, anyway? 
+# So, at this point, why don't you tell us what you make of it all. Can anyone see potential for Python in their own research? What are you working on, anyway? 
 
 # Anything you're struggling with so far?
-
-# <headingcell level=1>
-# Session 2: Functions, lists and variables
-
-# <markdowncell>
-# Welcome back. How's everybody settling in?
 
 # At this point, we want to dive more deeply into general Python functionality. We want to define some functions, manipulate some lists, and understand better what variables are and what they do.
 
@@ -320,11 +303,23 @@ print answer
 # Defining a function
 
 # <markdowncell>
+# Next, we'll talk about *functions*. Here's an example:
+
+# <codecell>
+def welcomer(name):
+    print 'Welcome, %s!' % name
+
+# <markdowncell>
+# Notice that it doesn't do anything by itself. It needs to actually be *called*, and given some data:
+
+# <codecell>
+welcomer('Kim')
+
+# <markdowncell>
 # You may wish to repeat an operation multiple times looking at different texts or different terms within a text. Instead of re-entering the formula every time, you can assign a name and set of actions to a particular task.
 
-# We've just created a simple function that welcomed you and told you the time.
-
 # Previously, we calculated the lexical diversity of a text. In NLTK, we can create a function called **lexical diversity** that runs a single line of code. We can then call this function to quickly determine the lexical density of a corpus or subcorpus.
+
 # Advantages of functions:
 # 1. Save you typing
 # 2. You can be sure you're doing exactly the same operation every time
@@ -347,6 +342,7 @@ lexical_diversity(text2)
 
 # <markdowncell>
 # The parentheses are important here as they sepatate the the task, that is the work of the function, from the data that the function is to be performed on. 
+
 # The data in parentheses is called the argument of the function. When we use a function, we say that we 'call' it. 
 
 # Other functions that we've used already include len() and sorted() - these were predefined. *lexical_diversity()* is one we set up ourselves; note that it's conventional to put a set of parentheses after a function, to make it clear what we're talking about.
@@ -415,26 +411,26 @@ print 'Our fruit salad contains: ' + listasastring
 # We can navigate this list with the help of indexes. Just as we can find out the number of times a word occurs in a text, we can also find where a word first occurs. We can navigate to different points in a text without restriction, so long as we can describe where we want to be.
 
 # <codecell>
-text4.index('awaken')
+print text4.index('awaken')
 
 # <markdowncell>
 # This works in reverse as well. We can ask Python to locate the 158th item in our list (note that we use square brackets here, not parentheses)
 
 # <codecell>
-text4[158]
+print text4[158]
 
 # <markdowncell>
 # As well as pulling out individual items from a list, indexes can be used to pull out selections of text from a large corpus to inspect. We call this slicing
 
 # <codecell>
-text5[16715:16735]
+print text5[16715:16735]
 
 # <markdowncell>
 # If we're asking for the beginning or end of a text, we can leave out the first or second number. For instance, [:5] will give us the first five items in a list while [8:] will give us all the elements from the eighth to the end. 
 
 # <codecell>
-text2[:10]
-text4[145700:]
+print text2[:10]
+print text4[145700:]
 
 # <markdowncell>
 # To help you understand how indexes work, let's create one.
@@ -442,9 +438,9 @@ text4[145700:]
 # We start by defining the name of our index and then add the items. You probably won't do this in your own work, but you may want to manipulate an index in other ways. Pay attention to the quote marks and commas when you create your test sentence.
 
 # <codecell>
-sent = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+sent = ['The', 'quick', 'brown', 'fox']
 sent[0]
-sent[8]
+print sent[2]
 
 # <markdowncell>
 # Note that the first element in the list is zero. This is because we are telling Python to go zero steps forward in the list. If we use an index that is too large (that is, we ask for something that doesn't exist), we'll get an error.
@@ -452,10 +448,9 @@ sent[8]
 # We can modify elements in a list by assigning new data to one of its index values. We can also replace a slice with new material.
 
 # <codecell>
-
 sent[2] = 'furry'
-sent[7] = 'spotty'
-sent
+sent[3] = 'child'
+print sent
 
 # <headingcell level=3>
 #  Defining variables
@@ -474,7 +469,6 @@ sent
 #4. Print 'alphabetised' 
 
 # <codecell>
-
 opening = ['It', 'was', 'a', 'dark', 'and', 'stormy', 'night', ';', 'the', 'rain', 'fell', 'in', 'torrents']
 clause = opening[0:7]
 alphabetised = sorted(clause)
@@ -485,10 +479,10 @@ alphabetised = sorted(clause)
 # If you want Python to show you the result, you have to ask for it (this is a good thing when you assign a variable to a very long list!).
 
 # <codecell>
-clause
+print clause
 
 # <codecell>
-alphabetised
+print alphabetised
 
 # <headingcell level=3>
 # Frequency distributions
@@ -573,7 +567,6 @@ sorted(w for w in set(text5) if len(w) > 7 and fdist5[w] > 7)
 #  | fdist.plot(cumulative=True) | cumulative plot of the frequency distribution |
 #  | fdist1 < fdist2 | test if samples in fdist1 occur less frequently than in fdist2 |
 
-
 # <markdowncell>
 # We can also find words that typically occur together, which tend to be very specific to a text or genre of texts. We'll talk more about these features and how to use them later.
 
@@ -583,6 +576,8 @@ text4.collocations()
 # <markdowncell>
 # We can also use numerical operators to refine the types of searches we ask Python to run. We can use the following relational operators:
 #
+#
+# ### Common relationals
 #  |  Relational | Meaning |
 #  |--------------:|:------------|
 #  | <    |  less than |
@@ -613,11 +608,11 @@ text4.collocations()
 # Words of exactly four characters:
 #
 # <markdowncell>
-# We can also look for features such as letter combinations, upper and lowercase letters, and digits. Some operators you might like to use are:
-#
+# ### Common operators
 #
 #  | Operator  | Purpose  |
 #  |--------------|------------|
+#  | s.startswith(t) | test if s starts with t |
 #  | s.endswith(t)  |  test if s ends with t | 
 #  | t in s         |  test if t is a substring of s | 
 #  | s.islower()    |  test if s contains cased characters and all are lowercase | 

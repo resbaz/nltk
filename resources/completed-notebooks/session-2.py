@@ -65,7 +65,7 @@ HTML('<iframe src=http://www.ozpolitic.com/forum/YaBB.pl?board=global width=700 
 
 # <codecell>
 from urllib import urlopen # a library for working with urls
-url = "https://raw.githubusercontent.com/resbaz/lessons/master/nltk/corpora/oz_politics/ozpol.txt" # define the url
+url = "https://raw.githubusercontent.com/resbaz/nltk/corpora/oz_politics/ozpol.txt" # define the url
 raw = urlopen(url).read() # download and read the corpus into raw variable
 raw = unicode(raw.lower(), 'utf-8') # make it lowercase and unicode
 len(raw) # how many characters does it contain?
@@ -79,104 +79,7 @@ f = open('corpora/oz_politics/ozpol.txt')
 raw = f.read()
 raw = unicode(raw.lower(), 'utf-8') # make it lowercase and unicode
 len(raw)
-raw[:2000] 
-
-# <headingcell level=2>
-# Regular Expressions
-
-# <markdowncell>
-# Before we go any further, we need to talk about Regular Expressions. Regular Expressions (regexes) are ways of searching for complex patterns in strings. Regexes are standardised across many programming languages, and can also be used in GUI text editors and word processers.
-
-# <codecell>
-import nltk # just in case (you should only need to import a library once per session, 
-    # but nothing bad will happen if you do it again)
-import re # import this before using regexes!
-
-# <markdowncell>
-# If only using alphanumeric characters and spaces, regexes work like any normal search.
-
-# <codecell>
-# print only match
-regex = re.compile(r"government")
-re.findall(regex, raw)
-
-# <markdowncell>
-# Hmm ... not very useful.
-
-# <codecell>
-# print whole line
-regex = re.compile(r'government')
-for line in raw.splitlines():
-    if regex.search(line) is not None:
-        print line
-
-# <markdowncell>
-# ... but regex can be much more powerful than that. Certain characters have special meanings:
-
-# * . (period): any character
-# * \* (asterisk): any number of times
-# * \b: word boundary
-# * ^ (carat): start of a line
-# * $ (dollar sign): end of a line
-# * \+ (plus): one or more times
-# * [xy]: either x or y
-# * o{5}: five os in a row
-# * o{5,}: at least five os in a row
-# * o{,5}: max five os in a row
-# * (any|of|these|words)
-
-# <codecell>
-# [a-z] means any letter
-# the plus means ''one or more of the thing before''
-regex = re.compile(r"[a-z]+ment")
-# find all instances of regex in raw
-results = re.findall(regex, raw)
-sorted(set(results)) # sort and print only unique results
-
-# <codecell>
-# word at start of line that ends in ion:
-regex = re.compile(r"^[a-z]+ion\b")
-# find all instances of regex in raw
-results = re.findall(regex, raw)
-sorted(set(results)) # sort and print only unique results
-
-# <markdowncell>
-# Sometimes, we want match the special characters:
-
-# <codecell>
-string = 'What!? :) U fink im flirtin wit *u*!? LOL'
-# define a regex:
-regex = re.compile(r':)')
-re.findall(regex, string)
-
-# <markdowncell>
-# What happened? Well, if you want to search for any special character, it must be 'escaped' by a backslash:
-
-# <codecell>
-string = 'What!? :) U fink im flirtin wit *u*!? LOL'
-# define a regex:
-regex = re.compile(r':\)')
-re.findall(regex, string)
-
-# <markdowncell>
-# Regular expressions take a while to master, but have great benefits for searching large texts for very specific things. Here are some additional regex resources:
-
-# * [Regex Info](http://www.regular-expressions.info/): tutorials etc.
-# * [Regexr](http://www.regexr.com/): a place to build and test out your regex
-# * [Regex crosswords](http://regexcrossword.com/): exactly what you think it is!
-
-# <markdowncell>
-# The code below will get any word over *minlength* alphabetic characters by passing an integer into a regex.
-
-# <codecell>
-minlength = 5  # minimum number of letters as integer 
-# gets passed into the building of the regex
-sentence = 'We, the democratically-elected leaders of our people, hereby declare Kosovo to be an independent and sovereign state'
-
-# any letter, minlength times:
-pattern = re.compile(r'[A-Za-z]{' + str(minlength) + ',}') 
-# What happens if you add a hyphen after 'a-z' inside the square brackets above?
-re.findall(pattern, sentence)
+raw[:2000]
 
 # <headingcell level=2>
 # Sentence segmentation
@@ -185,57 +88,6 @@ re.findall(pattern, sentence)
 # So, with a basic understanding of regex, we can now start to turn our corpus into a structured resource. At present, we have 'raw', a very, very long string of text.
 
 #  We should break the string into segments. First, we'll split the corpus into sentences. This task is a pretty boring one, and it's tough for us to improve on existing resources. We'll try, though.
-
-# Let's define a sentence as any string ending with (one or more) newline, full stop, question mark, or exclamation mark. A regex can be written to find these, and the split() function can  be used to break the string into a list of strings.
-
-# <codecell>
-import re
-sentences = re.split("(\n|\.|\?|!)+", raw)
-print 'Sentence: ' + '\nSentence: '.join(sentences[:10]) # print the first ten sentences
-
-# <markdowncell>
-# Well, it worked, sort of. What problems do we have?
-
-# 1. sh.thole was split
-# 2. Empty matches/punctuation only matches
-
-# So, to fix our first problem, we have to make an intpretative decision. Is *sh.thole* a word? We could:
-
-# 1. Clean the corpus and remove this false positive
-# 2. Define sentence differently
-
-# We'll go with the second option, for better or worse. The regex in the code below makes sure that any sentence final character must not be followed by a letter.
-
-# <codecell>
-sentences = re.split("(?:\n|\.|\?|!)+([^a-zA-Z]|$)", raw)
-print 'Sentence: ' + '\nSentence: '.join(sentences[:10])
-
-# <markdowncell>
-# Problem 1 is solved: *sh.thole* is now a single token. To fix Problem 2, we will remove list items not containing a letter, as any sentence must contain at least one by definition.
-
-# <codecell>
-regex = re.compile('[a-zA-Z]')
-no_blanklines = [sentence for sentence in sentences if regex.match(sentence)]
-# or, an alternative approach using filter function:
-# no_blanklines = filter(regex.match, sentences)
-print 'Sentence: ' + '\nSentence: '.join(no_blanklines[:20]) # this should be better!
-
-# <markdowncell>
-# The code below turns out sentence segmenter into a function.
-
-# <codecell>
-def sent_seg(string):
-    allmatches = re.split("(?:\n|\.|\?|!)+([^a-zA-Z]|$)", string)
-    regex = re.compile('[a-zA-Z]')
-    sentences = [sentence for sentence in allmatches if regex.match(sentence)]
-    length = len(sentences)
-    return sentences
-
-# <codecell>
-# Call the segmenter on our raw text here. Store it in a variable called 'sents'
-
-# <markdowncell>
-# It's all academic, anyway: NLTK actually has a sentence segmenter built in that works better than ours (we didn't deal with quotation marks, or brackets, for example).
 
 # <codecell>
 sent_tokenizer=nltk.data.load('tokenizers/punkt/english.pickle')
@@ -298,26 +150,6 @@ stemmed_sents[:10]
 # <markdowncell>
 # Looking at the output, we can see that the stemmer works: *wingers* becomes *winger*, and *tearing* becomes *tear*. But, sometimes it does things we don't want: *Nothing* becomes *noth*, and *mate* becomes *mat*. Even so, for the learns, let's rewrite our function with a regex:
 
-# <codecell>
-def stem(word):
-    import re
-    # define a regex to get word, and common suffixes
-    regex = r'^(.*?)(ing|ly|ed|ious|ies|ive|es|s|ment)?$'
-    stem, suffix = re.findall(regex, word)[0]
-    return stem
-
-# <markdowncell>
-# Because we just redefined the *stem()* function, we can run the previous code and get different results.
-
-
-# <markdowncell>
-# Here's a very quick implementation of our stemmer on our raw tokens:
-
-# <codecell>
-tokens = nltk.word_tokenize(raw)
-stemmed = [stem(t) for t in tokens]
-print stemmed[:50]
-
 # <markdowncell>
 # We can see that this approach has obvious limitations. So, let's rely on a purpose-built stemmer. These rely in part on dictionaries. Note the subtle differences between the two possible stemmers:
 
@@ -342,97 +174,23 @@ print stems[:100]
 
 # Keywording is what generates word-clouds beside online news stories, blog posts, and the like. In combination with speech-to-text, it's used in Oxford University's [Spindle Project](http://openspires.oucs.ox.ac.uk/spindle/) to automatically archive recorded lectures with useful tags.
 
-# In fact, the keywording part of the Spindle Project is written in Python, and in open source.
-
-# Spindle has sensible defaults for keyword calculation. Let's download their code and use it to generate keywords from our corpus.
+# We'll use corpkit, which relies on Spindle.
 
 # <codecell>
-import sys
- # download spindle from github
-!wget https://github.com/sgrau/spindle-code/archive/master.zip
-!unzip master.zip # unzip it
-!rm master.zip # remove the zip file
-# put the keyworder directory in python's path, so we can call it easily
-sys.path.insert(0, 'spindle-code-master/keywords')
-# import the function
-from keywords import keywords_and_ngrams # import keywords function
+! pip install corpkit
+import corpkit
+from corpkit import keywords
 
 # <codecell>
 # this tool works with raw text, not tokens!
-keywords_and_ngrams(raw.encode("UTF-8"), nBigrams = 0)
+keys, ngrams = keywords(raw.encode("UTF-8"))
+for key in keys[:20]:
+    print key
 
 # <markdowncell>
 # Success! We have keywords.
 
 # > Keep in mind, the BNC reference corpus was created before ISIS and ISIL existed. *Moslem/moslems* is a dispreferred spelling of Muslim, used more frequently in anti-Islamic discourse. Also, it's unlikely that a transcriber of the spoken BNC would choose the Moslem spelling. *Having an inappropriate reference corpus is a common methodological problem in discourse analytic work*.
-
-# Our keywords would perhaps be better if they were stemmed. That shouldn't be too hard for us:
-
-# <codecell>
-keywords_and_ngrams(stems, nBigrams = 0) # this will use our corpus of stems, as defined earlier.
-
-# <markdowncell>
-# Rats! Keywording with stems actually revealed a list of incorrect stems.
-
-# What re really need to do is improve our stemmer, and then come back and try again.
-
-# <headingcell level=2>
-# A return to stemming
-
-# <markdowncell>
-# Keywords and ngram searches actually work by comparing a corpus to a reference corpus. In our case, we have been using a dictionary of words in the 100 million word *British National Corpus*. We could use this same dictionary to make sure our stemmer does not create non-words when it stems.
-
-# First, let's get a list of common words in the BNC from the *pickle* provided by SPINDLE (*pickle* is a kind of list compression).
-
-# <codecell>
-import pickle
-import os
-# unpack the pickled list
-bncwordlist = pickle.load(open('spindle-code-master/keywords/bnc.p', 'rb')) 
-bnc_commonwords = [] # empty list
-for word in bncwordlist:
-    getval = bncwordlist[word] # find out number of occurrences of word
-    if getval > 20: # if more than 20
-        bnc_commonwords.append(word) # add to common word list
-print bnc_commonwords[:200] # what are our results?
-
-# <markdowncell>
-# So, this gives us a list of any word appearing more than twenty times in the BNC. We could build this function into our stemmer:
-
-# <codecell>
-# Now, let's use this as the dict for our stemmer
-# The third variable sets a default threshold, but also allows us to enter one.
-def newstemmer(words, stemmer, threshold = 20):
-    """A stemmer that uses Lancaster/porter stemmer plus a dictionary."""
-    import pickle
-    import os
-    import nltk
-    bncwordlist = pickle.load(open('spindle-code-master/keywords/bnc.p', 'rb'))
-    bnc_commonwords = {k for (k,v) in bncwordlist.iteritems() if v > threshold}
-    # if words is a raw string, tokenise it
-    if type(words) == unicode or type(words) == string:
-        tokens = nltk.word_tokenize(words)
-    # or, if list of tokens, duplicate the list
-    else:
-        tokens = words
-        # define stemmer based on the argument we passed in
-    if stemmer == 'Lancaster':
-        stemmertouse = nltk.LancasterStemmer()
-    if stemmer == 'Porter':
-        stemmertouse = nltk.PorterStemmer()
-    # empty list of stems
-    stems = []
-    for w in tokens:
-        # stem each word
-        stem = stemmertouse.stem(w)
-        # if the stem is in the bnc list
-        if stem in bnc_commonwords:
-            # add the stem
-            stems.append(stem)
-        else:
-            # or else, just add the word as it was
-            stems.append(w)
-    return stems
 
 # <markdowncell>
 # Now, we can fiddle with the stemmer and BNC frequency to get different keyword lists.
@@ -529,11 +287,13 @@ sorted(finder.nbest(bigram_measures.raw_freq, 30))
 
 # Clusters/n-grams have a spooky ability to tell us what a text is about.
 
-# We can use *Spindle* for bigram searching as well:
+# We can use *Spindle*/corpkit for bigram searching as well:
 
 # <codecell>
 # an argument here to stop keywords from being produced.
-keywords_and_ngrams(raw.encode("UTF-8"), nKeywords=0)
+keys, ngrams = keywords(raw.encode("UTF-8"))
+for ngram in ngrams[:50]:
+    print ngram
 
 # <markdowncell>
 # There's also a method for n-gram production in NLTK. We can use this to understand how n-gramming works.
@@ -543,7 +303,7 @@ keywords_and_ngrams(raw.encode("UTF-8"), nKeywords=0)
 # <codecell>
 from nltk.util import ngrams
 # define a sentence
-sentence = 'give a man a fish and you feed him for a day; teach a man to fish and you feed him for a lifetime'
+sentence = 'give a man a fish and you feed him for a day; teach a man to fish and you feed him for a lifetime'  
 # length of ngram
 n = 10
 # use builtin tokeniser (but we could use a different one)
