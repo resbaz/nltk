@@ -65,7 +65,7 @@ HTML('<iframe src=http://www.ozpolitic.com/forum/YaBB.pl?board=global width=700 
 
 # <codecell>
 from urllib import urlopen # a library for working with urls
-url = "https://raw.githubusercontent.com/resbaz/nltk/corpora/oz_politics/ozpol.txt" # define the url
+url = "https://raw.githubusercontent.com/resbaz/nltk/master/corpora/oz_politics/ozpol.txt" # define the url
 raw = urlopen(url).read() # download and read the corpus into raw variable
 raw = unicode(raw.lower(), 'utf-8') # make it lowercase and unicode
 len(raw) # how many characters does it contain?
