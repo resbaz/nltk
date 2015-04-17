@@ -59,7 +59,7 @@ from IPython.display import HTML
 HTML('<iframe src=http://www.ozpolitic.com/forum/YaBB.pl?board=global width=700 height=350></iframe>')
 
 # <markdowncell>
-# This file is available online, at the [ResBaz GitHub](https://github.com/resbaz). We can ask Python to get it for us. 
+# This file is available online, at the [ResBaz GitHub](https://github.com/resbaz/nltk). We can ask Python to get it for us. 
 
 # > Later in the course, we'll discuss how to extract data from the Web and turn this data into a corpus.
 
@@ -72,7 +72,58 @@ len(raw) # how many characters does it contain?
 raw[:2000] # first 2000 characters
 
 # <markdowncell>
-# We actually already downloaded this file when we first cloned the ResBaz GitHub repository. It's in our *corpora* folder. We can access it like this:
+# So that just got one file. Next, let's have a look at [Project Gutenberg](https://www.gutenberg.org/wiki/Technology_%28Bookshelf%29). Let's check out *Food processing*.
+
+# We can find the URL of a txt file and download it just like above.
+
+#  We could use a loop to get more, however. Let's also write a function to get the texts of books we want. Let's use the book number section to do that.
+
+# <codecell>
+booknums = ['24510', '19073', '21592']
+
+# <codecell>
+def gutenberger(list_of_nums):
+    text = []
+    from urllib import urlopen
+    for num in list_of_nums:
+        num = str(num)
+        url = 'https://www.gutenberg.org/cache/epub/' + num + '/pg' + num + '.txt'
+        raw = urlopen(url).read()
+        raw = unicode(raw, 'utf-8')
+        title = [line for line in raw.splitlines() if line.startswith('Title:')]
+        if title:
+            title = title[0]
+            print title
+        text.append([title, raw])
+    return text
+
+
+# <markdowncell>
+# Let's call our function:
+
+# <codecell>
+foodbooks = gutenberger(booknums)
+
+# <markdowncell>
+# We could then use indexing:
+
+# <codecell>
+book[0][0]
+
+# <markdowncell>
+# Or we could then use another loop to start playing with our data:
+
+# <codecell>
+for title, text in foodbooks:
+    print title.upper()
+    print text[10000:10500]
+    print '\n\n'
+
+# <markdowncell>
+# For this session, we'll work with the forum corpus.
+
+# <markdowncell>
+# We actually already downloaded a version of this file when we first cloned the ResBaz GitHub repository. It's in our *corpora* folder. We can access it like this:
 
 # <codecell>
 f = open('corpora/oz_politics/ozpol.txt')
@@ -131,27 +182,38 @@ def stem(word):
     return word
 
 # <markdowncell>
+# Give it a word to stem!
+
+# <codecell>
+stem('friends')
+
+# <markdowncell>
 # Let's run it over some text and see how it performs.
 
 # <codecell>
 # empty list for our output
-stemmed_sents = []
+
+for sent in tokenized_sents[:5]:
+    for token in sent:
+        print stem(token)
+
+# <markdowncell>
+# Looking at the output, we can see that the stemmer works: *wingers* becomes *winger*, and *tearing* becomes *tear*. But, sometimes it does things we don't want: *Nothing* becomes *noth*, and *mate* becomes *mat*. 
+
+# <markdowncell>
+# We can see that this approach has obvious limitations. So, let's rely on a purpose-built stemmer. These rely in part on dictionaries. Note the subtle differences between the two possible stemmers.
+
+# <markdowncell>
+# Currently, we have a list of sentences, and each sentence is a list of words. We need to flatten this list:
+
+# <codecell>
+tokens = []
 for sent in tokenized_sents:
-    # empty list for stemmed sentence:
-    stemmed = []
-    for word in sent:
-        # append the stem of every word
-        stemmed.append(stem(word))
-    # append the stemmed sentence to the list of sentences
-    stemmed_sents.append(stemmed)
-# pretty print the output
-stemmed_sents[:10]
+    for token in sent:
+        tokens.append(token)
 
 # <markdowncell>
-# Looking at the output, we can see that the stemmer works: *wingers* becomes *winger*, and *tearing* becomes *tear*. But, sometimes it does things we don't want: *Nothing* becomes *noth*, and *mate* becomes *mat*. Even so, for the learns, let's rewrite our function with a regex:
-
-# <markdowncell>
-# We can see that this approach has obvious limitations. So, let's rely on a purpose-built stemmer. These rely in part on dictionaries. Note the subtle differences between the two possible stemmers:
+# Now we can try our NLTK's stemmers!
 
 # <codecell>
 # define stemmers
@@ -192,18 +254,6 @@ for key in keys[:20]:
 
 # > Keep in mind, the BNC reference corpus was created before ISIS and ISIL existed. *Moslem/moslems* is a dispreferred spelling of Muslim, used more frequently in anti-Islamic discourse. Also, it's unlikely that a transcriber of the spoken BNC would choose the Moslem spelling. *Having an inappropriate reference corpus is a common methodological problem in discourse analytic work*.
 
-# <markdowncell>
-# Now, we can fiddle with the stemmer and BNC frequency to get different keyword lists.
-
-# <codecell>
-# try raising the threshold if there are still bad spellings!
-stemmed = newstemmer(raw, 'Lancaster', 10)
-
-# <codecell>
-keys = keywords_and_ngrams(stemmed)
-keys[0] # only keywords
-keys[1] # only n-grams
-
 # <headingcell level=2>
 # Collocation
 
@@ -214,18 +264,19 @@ keys[1] # only n-grams
 
 # This kind of information may be useful to lexicographers, discourse analysts, or advanced language learners.
 
-# In NLTK, collocation works from ordered lists of tokens. Let's put out tokenised sents into a single, huge list of tokens:
+# In NLTK, collocation works from ordered lists of tokens. We made this earlier as tokens, didn't we:
 
 # <codecell>
-allwords = []
-# for each sentence,
+print tokens[:50]
+
+# <markdowncell>
+# If not, here:
+
+# <codecell>
+tokens = []
 for sent in tokenized_sents:
-    # for each word,
-    for word in sent:
-        # make a list of all words
-        allwords.append(word)
-print allwords[:20]
-# small challenge: can you think of any other ways to do this?
+    for token in sent:
+        tokens.append(token)
 
 # <markdowncell>
 # Now, let's feed these to an NLTK function for measuring collocations:
@@ -236,48 +287,49 @@ from nltk.collocations import *
 # define statistical tests for bigrams
 bigram_measures = nltk.collocations.BigramAssocMeasures()
 # go and find bigrams
-finder = BigramCollocationFinder.from_words(allwords)
+finder = BigramCollocationFinder.from_words(tokens)
 # measure which bigrams are important and print the top 30
-sorted(finder.nbest(bigram_measures.raw_freq, 30))
+print sorted(finder.nbest(bigram_measures.raw_freq, 30))
 
 # <markdowncell>
 # So, that tells us a little: we can see that terrorists, Muslims and the Middle East are commonly collocating in the text. At present, we are only looking for immediately adjacent words. So, let's expand out search to a window of *five words either side*
 
+# <codecell>
 # ''window size'' specifies the distance at which 
 # two tokens can still be considered collocates
-finder = BigramCollocationFinder.from_words(allwords, window_size=5)
-sorted(finder.nbest(bigram_measures.raw_freq, 30))
+finder = BigramCollocationFinder.from_words(tokens, window_size=5)
 
 # <markdowncell>
 # Now we have the appearance of very common words! Let's use NLTK's stopwords list to remove entries containing these:
 
 # <codecell>
-finder = BigramCollocationFinder.from_words(allwords, window_size=5)
-# get a list of stopwords from nltk
 ignored_words = nltk.corpus.stopwords.words('english')
-# make sure no part of the bigram is in stopwords
-finder.apply_word_filter(lambda w: len(w) < 2 or w.lower() in ignored_words)
-finder.apply_freq_filter(2)
-#print the sorted collocations
-sorted(finder.nbest(bigram_measures.raw_freq, 30))
+finder.apply_word_filter(lambda w: w.lower() in ignored_words)
 
 # <markdowncell>
 # There! Now we have some interesting collocates. Finally, let's remove punctuation-only entries, or entries that are *n't*, as this is caused by different tokenisers:
 
 # <codecell>
-finder = BigramCollocationFinder.from_words(allwords, window_size=5)
-ignored_words = nltk.corpus.stopwords.words('english')
-# anything containing letter or number
-regex = r'[A-Za-z0-9]'
-# the n't token
-nonot = r'n\'t'
-# lots of conditions!
-finder.apply_word_filter(lambda w: len(w) < 2 or w.lower() in ignored_words or not re.match(regex, w) or re.match(nonot, w))
-finder.apply_freq_filter(2)
-sorted(finder.nbest(bigram_measures.raw_freq, 30))
+finder.apply_word_filter(lambda w: w.lower() in ignored_words or not w.isalnum())
 
 # <markdowncell>
 # You can get a lot more info on collocation at the [NLTK homepage](http://www.nltk.org/howto/collocations.html).
+
+# Completed bigrams code:
+
+# <codecell>
+# get all the functions needed for collocation work
+from nltk.collocations import *
+# define statistical tests for bigrams
+bigram_measures = nltk.collocations.BigramAssocMeasures()
+# go and find bigrams
+finder = BigramCollocationFinder.from_words(tokens, window_size=5)
+ignored_words = nltk.corpus.stopwords.words('english')
+finder.apply_word_filter(lambda w: w.lower() in ignored_words or not w.isalnum())
+# measure which bigrams are important and print the top 30
+result = sorted(finder.nbest(bigram_measures.raw_freq, 30))
+for bigram in result:
+    print bigram
 
 # <headingcell level=2>
 # Clustering/n-grams
@@ -286,14 +338,6 @@ sorted(finder.nbest(bigram_measures.raw_freq, 30))
 # Clustering is the task of finding words that are commonly **immediately** adjacent (as opposed to collocates, which may just be nearby). This is also often called n-grams: bigrams are two tokens that appear together, trigrams are three, etc.
 
 # Clusters/n-grams have a spooky ability to tell us what a text is about.
-
-# We can use *Spindle*/corpkit for bigram searching as well:
-
-# <codecell>
-# an argument here to stop keywords from being produced.
-keys, ngrams = keywords(raw.encode("UTF-8"))
-for ngram in ngrams[:50]:
-    print ngram
 
 # <markdowncell>
 # There's also a method for n-gram production in NLTK. We can use this to understand how n-gramming works.
@@ -304,23 +348,32 @@ for ngram in ngrams[:50]:
 from nltk.util import ngrams
 # define a sentence
 sentence = 'give a man a fish and you feed him for a day; teach a man to fish and you feed him for a lifetime'  
+tokenised = nltk.word_tokenize(sentence)
 # length of ngram
 n = 10
 # use builtin tokeniser (but we could use a different one)
-tengrams = ngrams(sentence.split(), n)
+tengrams = ngrams(tokenised, n)
 for gram in tengrams:
-  print gram
+    print gram
 
 # <markdowncell>
 # So, there are plenty of tengrams in there! What we're interested in, however, is duplicated n-grams:
 
 # <codecell>
 # arguments: a text, ngram size, and minimum occurrences
-def ngrammer(text, gramsize, threshold = 4):
+def ngrammer(text, gramsize = 3, threshold = 4):
     """Get any repeating ngram containing gramsize tokens"""
     # we need to import this in order to find the duplicates:
-    from collections import defaultdict
+    import nltk
     from nltk.util import ngrams
+    from collections import defaultdict
+    # get ngrams of gramsize    
+    if type(text) != list:
+        text = tokenised = nltk.word_tokenize(text)
+    text = [token for token in text if token.isalnum()]
+    # get ngrams of gramsize    
+    raw_grams = ngrams(text, gramsize)
+    
     # a subdefinition to get duplicate lists in a list
     def list_duplicates(seq):
         tally = defaultdict(list)
@@ -329,24 +382,40 @@ def ngrammer(text, gramsize, threshold = 4):
             # return to us the index and the ngram itself:
         return ((len(locs),key) for key,locs in tally.items() 
                if len(locs) > threshold)
-    # get ngrams of gramsize    
-    raw_grams = ngrams(text.split(), gramsize)
+
     # use our duplication detector to find duplicates
     dupes = list_duplicates(raw_grams)
     # return them, sorted by most frequent
     return sorted(dupes, reverse = True)
 
+
 # <markdowncell>
 # Now that it's defined, let's run it, looking for trigrams
 
 # <codecell>
-ngrammer(raw, 3)
+ngrammer(raw, gramsize = 3)
+
+# <markdowncell>
+# Whoops, punctutation.
+
+# <codecell>
+# add me:
+text = [token for token in text if token.isalnum()]
 
 # <markdowncell>
 # Too many results? Let's set a higher threshold than the default.
 
 # <codecell>
-ngrammer(raw, 3, threshold = 10)
+ngrammer(raw, gramsize = 3, threshold = 10)
+
+# <markdowncell>
+# We can use *Spindle*/corpkit for bigram searching as well:
+
+# <codecell>
+keys, ngrams = keywords(raw.encode("UTF-8"))
+for ngram in ngrams[:50]:
+    print ngram
+
 
 # <headingcell level=2>
 # Concordancing with regular expressions
@@ -358,14 +427,6 @@ ngrammer(raw, 3, threshold = 10)
 text = nltk.Text(tokens)  # formats our tokens for concordancing
 text.concordance("muslims")
 
-# <markdowncell>
-# We could even our stemmed corpus here:
-text = nltk.Text(stemmed)
-text.concordance("muslims")
-
-# <markdowncell>
-# You get no matches in the latter case, because all instances of *muslims* were stemmed to *muslim*.
-
 # A problem with the NLTK concordancer is that it only works with individual tokens. What if we want to find words that end with **ment*, or words beginning with *poli**?
 
 # We already searched text with Regular Expressions. It's not much more work to build regex functionality into our own concordancer.
@@ -374,10 +435,6 @@ text.concordance("muslims")
 
 # <codecell>
 # define a regex for different aussie words
-aussie = r'(aussie|australia)'
-searchpattern = re.compile(r"(.*)" + aussie + r"(.*)")
-search = re.findall(searchpattern, raw)
-search[:5]
 
 # <markdowncell>
 # Well, it's ugly, but it works. We can see five bracketted results, each containing three strings. The first and third strings are the left-context and right-context. The second of the three strings is the search term.
@@ -387,20 +444,16 @@ search[:5]
 # Let's go ahead and turn our regex seacher into a concordancer:
 
 # <codecell>
-def concordancer(text, regex):
-    """Concordance using regular expressions"""
-    import re
-    # limit context to 30 characters max
-    searchpattern = re.compile(r"(.{,30})(\b" + regex + r"\b)(.{,30})")
-    # find all instances of our regex
-    search = re.findall(searchpattern, raw)
-    for result in search:
-        #join each result with a tab, and print
-        print("\t".join(result).expandtabs(20))
-        # expand tabs helps align results
+def concordancer(text, query):
+    for line in text.splitlines():
+        if query in line:
+            start, end = line.split(query, 1)  
+            concline = [start[-30:], query, end[:30]]
+            print "\t".join(concline).expandtabs(35)
 
 # <codecell>
-concordancer(raw, r'aus.*?')
+concordancer(raw, 'australia')
+
 
 # <markdowncell>
 # Great! With six lines of code, we've officially created a function that improves on the one provided by NLTK! And think how easy it would be to add more functionality: an argument dictating the size of the window (currently 30 characters), or printing line numbers beside matches, would be pretty easy to add, as well.
@@ -481,3 +534,4 @@ concordancer(raw, r'aus.*?')
 #
 # <codecell>
 # 
+
