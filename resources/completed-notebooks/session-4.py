@@ -10,15 +10,63 @@
 # <markdowncell>
 # So, now you know Python and NLTK! The main things we still have to do are:
 
-# 1. Manage resources and results
-# 2. Brainstorm some other uses for NLTK
-# 3. Integrate IPython into your existing workflow
-# 4. Have an open discussion about what we've done
-# 5. Summarise and say goodbye!
+# 1. Address some specific questions
+# 2. Manage resources and results
+# 3. Brainstorm some other uses for NLTK
+# 4. Integrate IPython into your existing workflow
+# 5. Have an open discussion about what we've done
+# 6. Summarise and say goodbye!
 
 # This lesson is pretty light on content and structure. Please do jump in at any point, and tell us about your research, and whether or not what you've learned here will be of much use.
 
 # Or, ask us if Python can do a certain thing. Maybe we have some tips!
+
+# <headingcell level=2>
+# Addressing your questions
+
+# <headingcell level=3>
+# Mining the web
+
+# <markdowncell>
+# Let's have a look at [Project Gutenberg](https://www.gutenberg.org/wiki/Technology_%28Bookshelf%29). Let's check out *Food processing*.
+
+# <codecell>
+booknums = ['24510', '19073', '21592']
+
+# <codecell>
+def gutenberger(list_of_nums):
+    text = []
+    from urllib import urlopen
+    for num in list_of_nums:
+        num = str(num)
+        url = 'https://www.gutenberg.org/cache/epub/' + num + '/pg' + num + '.txt'
+        raw = urlopen(url).read()
+        raw = unicode(raw, 'utf-8')
+        title = [line for line in raw.splitlines() if line.startswith('Title:')]
+        if title:
+            title = title[0]
+            print title
+        text.append([title, raw])
+    return text
+
+# <codecell>
+# call our function!
+
+# <markdowncell>
+# The thing to remember here is that the web is well-structured. URLs are just strings, and you can hack them very easily.
+
+# <headingcell level=3>
+# Getting my data into NLTK
+
+# <markdowncell>
+# The key here is to get your work into **clean, plain text**
+
+# <codecell>
+#,,,
+
+# <headingcell level=3>
+# Question 3
+
 
 # <headingcell level=2>
 # Managing resources and results
