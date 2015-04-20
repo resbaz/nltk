@@ -4,7 +4,7 @@
 # <br>
 
 # <headingcell level=1>
-# Session 4: The Fraser Speech Corpus
+# Session 3: The Fraser Speech Corpus
 
 # <markdowncell>
 # **Welcome back!**
@@ -24,7 +24,7 @@
 # Malcolm Fraser and his speeches
 
 # <markdowncell>
-# So, for much of the next two sessions, we are going to be working with a corpus of speeches made by Malcolm Fraser. 
+# For much of this session, we are going to be working with a corpus of speeches made by Malcolm Fraser. 
 
 # <codecell>
 # this code allows us to display images and webpages in our notebook
@@ -46,7 +46,7 @@ Image(url='http://www.unimelb.edu.au/malcolmfraser/photographs/family/105~36fam6
 
 # He retired from parliament following the defeat of the Liberal party at the 1983 election and in 2009 resigned from the Liberal party after becoming increasingly critical of some of its policies.
 
-# He can now be found on Twitter as **@MalcolmFraser12**
+# He can now be found on Twitter as `@MalcolmFraser12`
 
 # <codecell>
 HTML('<iframe src=http://en.wikipedia.org/wiki/Malcolm_Fraser width=700 height=350></iframe>')
@@ -60,7 +60,7 @@ HTML('<iframe src=http://www.unimelb.edu.au/malcolmfraser/ width=700 height=350>
 # <markdowncell>
 # Every week, between 1954 until 1983, Malcolm Fraser made a talk to his electorate that was broadcast on Sunday evening on local radio.  
 
-# The speeches were transcribed years ago. Optical Character Recognition (OCR) was used to digitise the transcripts. This means that the texts are not of perfect quality. 
+# The speeches were transcribed years ago. *Optical Character Recognition* (OCR) was used to digitise the transcripts. This means that the texts are not of perfect quality. 
 
 # Some have been manually corrected, which has removed extraneous characters and mangled words, but even so there are still some quirks in the formatting. 
 
@@ -82,7 +82,7 @@ HTML('<iframe src=http://www.unimelb.edu.au/malcolmfraser/ width=700 height=350>
 # Discussion
 
 # <markdowncell>
-# *What are the characteristics of clean and messy data? Any personal experiences? Discuss with your neighbours.* 
+# *What are the characteristics of clean and messy data? Any personal experiences?
 
 # It will be important to bear these characteristics in mind once you start building your own datasets and corpora.
 
@@ -153,14 +153,40 @@ HTML('<iframe src=http://www.unimelb.edu.au/malcolmfraser/ width=700 height=350>
 # <markdowncell>
 # # Charting change in Fraser's speeches
 
-# Before we get started, we have to install Java, as some of our tools rely on some Java code. You'll very likely have Java installed on your local machine, but we need it on the cloud. To make it work, you should run the following line of code in the cloud Terminal:
+# Before we get started, we have to install Java, as some of our tools rely on some Java code. You'll very likely have Java installed on your local machine, but we need it on the cloud:
 
 # <codecell>
 ! yum -y install java
 # ! pip install corpkit 
 
+# <markdowncell>
+# And now, let's import the functions we need from `corpkit`:
+
+# <codecell>
+import corpkit
+from corpkit import (
+    interrogator, plotter, table, quickview, 
+    tally, surgeon, merger, conc, keywords, 
+    collocates, quicktree, searchtree
+                    )
+
+# <markdowncell>
+# Here's an overview of each function's purpose:
+
+# | **Function name** | Purpose                            | |
+# | ----------------- | ---------------------------------- | |
+# | *quicktree()*  | draw a syntax tree         | |
+# | *searchtree()*  | find things in a parse tree         | |
+# | *interrogator()*  | interrogate parsed corpora         | |
+# | *plotter()*       | visualise *interrogator()* results | |
+# | *quickview()*     | view *interrogator()* results      | |
+# | *tally()*       | get total frequencies for *interrogator()* results      | |
+# | *surgeon()*       | edit *interrogator()* results      | |
+# | *merger()*       | merge *interrogator()* results      | |
+# | *conc()*          | complex concordancing of subcopora | |
+
 # <headingcell level=3>
-# Interrogating the corpus
+# Interrogating the Fraser corpus
 
 # <markdowncell>
 # To interrogate the corpus, we need a crash course in **syntax trees** and **Tregex queries**. Let's define a tree (from the Fraser Corpus, 1956), and have a look at its visual representation.
@@ -176,7 +202,8 @@ melbtree = (r'(ROOT (S (NP (NNP Melbourne)) (VP (VBZ has) (VP (VBN been) (VP (VB
 # Notice that an OCR error caused a parsing error. Oh well. Here's a visual representation, drawn with NLTK:
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/melbtree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/melbtree.png" />
+
 # <br>
 # <markdowncell>
 # The data is annotated at word, phrase and clause level. Embedded here is an elaboration of the meanings of tags *(ask Daniel if you need some clarification!)*:
@@ -185,7 +212,7 @@ melbtree = (r'(ROOT (S (NP (NNP Melbourne)) (VP (VBZ has) (VP (VBN been) (VP (VB
 HTML('<iframe src=http://www.surdeanu.info/mihai/teaching/ista555-fall13/readings/PennTreebankConstituents.html width=700 height=350></iframe>')
 
 # <markdowncell>
-# Note that the tags are a little bit different from the last parser we were using:
+# There are a number of different parsers, with some better than others:
 
 # <codecell>
 quicktree("Melbourne has been transformed over the let 18 months in preparation for the visitors")
@@ -201,57 +228,32 @@ quicktree("Melbourne has been transformed over the let 18 months in preparation 
 query = r'NNS'
 searchtree(melbtree, query)
 
-# <codecell>
-# A token matching the regex *Melb.?\**
-query = r'/Melb.?/'
-searchtree(melbtree, query)
+# <markdowncell>
+# Here's some more documentation about Tregex queries:
 
 # <codecell>
-query = r'NP'
-searchtree(melbtree, query)
+HTML('<iframe src=http://nlp.stanford.edu/~manning/courses/ling289/Tregex.html width=700 height=350></iframe>')
+
+# <codecell>
+#,,,
+
+# <codecell>
+#,,,
+
+# <codecell>
+#,,,
+
+# <codecell>
+#,,,
+
+# <codecell>
+#,,,
+
+# <codecell>
+#,,,
 
 # <markdowncell>
-# To make things more specific, we can create queries with multiple criteria to match, and specify the relationship between each criterion we want to match. Tregex will print everything matching **the leftmost criterion**.
-
-# <codecell>
-# NP with 18 as a descendent
-query = r'NP << /18/'
-searchtree(melbtree, query)
-
-# <markdowncell>
-# Using an exclamation mark negates the relationship. Try producing a query for a *noun phrase* (NP) without a *Melb* descendent:
-
-# <codecell>
-query = r'NP !<< /Melb.?/'
-searchtree(melbtree, query)
-
-# <markdowncell>
-# The dollar specifies a sibling relationship between two parts of the tree---that is, two words or tags that are horizontally aligned.
-
-# <codecell>
-# NP with a sister VP
-# This corresponds to 'subject' in many grammars
-query = r'NP $ VP'
-searchtree(melbtree, query)
-
-# <markdowncell>
-# Try changing the **more than** symbols to **less than**, and see how it affects the results.
-
-# <codecell>
-# Prepositional phrase in other prepositional phrases
-query = r'PP >> PP'
-searchtree(melbtree, query)
-
-# <markdowncell>
-# There is also a double underscore, which functions as a wildcard.
-
-# <codecell>
-# anything with any kind of noun tag
-query = r'__ > /NN.?/'
-searchtree(melbtree, query)
-
-# <markdowncell>
-# Using brackets, it's possible to create very verbose queries, though this goes well beyond our scope. Just know that it can be done!
+# A very complicated example:
 
 # <codecell>
 # particle verb in verb phrase with np sister headed by Melb.
@@ -267,32 +269,33 @@ searchtree(melbtree, query)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/colombotree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/colombotree.png" />
 # <br>
 
 # <codecell>
-colombotree = r'(ROOT (S (NP (PRP We)) (VP (VBP continue) (S (VP (TO to) (VP (VB place) (NP (NP (DT a) (JJ high) '
+colombotree = ( r'(ROOT (S (NP (PRP We)) (VP (VBP continue) (S (VP (TO to) (VP (VB place) (NP (NP (DT a) (JJ high) '
     r'(NN value)) (PP (IN on) (NP (JJ economic) (NN aid)))) (PP (IN through) (NP (DT the) (NNP Colombo) (NNP Plan))) '
-    r'(, ,) (S (VP (VBG involving) (NP (JJ considerable) (NN aid)) (PP (TO to) (NP (NP (JJ Asian) (NNS students)) 
-        r'(PP (IN in) (NP (NNP Australia))))))))))) (. .)))'
+    r'(, ,) (S (VP (VBG involving) (NP (JJ considerable) (NN aid)) (PP (TO to) (NP (NP (JJ Asian) (NNS students)) '
+        r'(PP (IN in) (NP (NNP Australia))))))))))) (. .)))' )
 
 # <markdowncell>
 #      As a result, wool industry and the research bodies are in a state of wonder and doubt about the future.
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/lessons/master/nltk/images/wooltree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/wooltree.png" />
 # <br>
 
 # <codecell>
-wooltree = r'(ROOT (S (PP (IN As) (NP (DT a) (NN result))) (, ,) (NP (NP (NN wool) (NN industry)) (CC and) '
+wooltree = ( r'(ROOT (S (PP (IN As) (NP (DT a) (NN result))) (, ,) (NP (NP (NN wool) (NN industry)) (CC and) '
                  r'(NP (DT the) (NN research) (NNS bodies))) (VP (VBP are) (PP (IN in) (NP (NP (DT a) (NN state)) '
-                    r'(PP (IN of) (NP (NN wonder) (CC and) (NN doubt))))) (PP (IN about) (NP (DT the) (NN future)))) (. .)))'
+                    r'(PP (IN of) (NP (NN wonder) (CC and) (NN doubt))))) (PP (IN about) (NP (DT the) (NN future)))) (. .)))' )
 
 # <markdowncell>
-# Try a few queries in the cells below.
+# Try a few queries using `searchtree()` in the cells below.
 
 # <codecell>
+#,,,
 # <codecell>
 #,,,
 # <codecell>
@@ -351,7 +354,7 @@ wooltree = r'(ROOT (S (PP (IN As) (NP (DT a) (NN result))) (, ,) (NP (NP (NN woo
 # Here's one visualisation of it. We're concerned with the two left-hand columns. Each level is an abstraction of the one below it.
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/interrogator/sfl_corpling/master/cmc-2014/images/egginsfixed.jpg" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/egginsfixed.jpg" />
 # <br>
 
 # Transitivity choices include fitting together configurations of:
@@ -368,7 +371,7 @@ wooltree = r'(ROOT (S (PP (IN As) (NP (DT a) (NN result))) (, ,) (NP (NP (NN woo
 
 # Lexical density is usually a good indicator of the general tone of texts. The language of academia, for example, often has a huge number of nouns to verbs. We can approximate an academic tone simply by making nominally dense clauses: 
 
-#       The consideration of interest is the potential for a participant of a certain demographic to be in Group A or Group B*.
+#       The consideration of interest is the potential for a participant of a certain demographic to be in Group A or Group B.
 
 # Notice how not only are there many nouns (*consideration*, *interest*, *potential*, etc.), but that the verbs are very simple (*is*, *to be*).
 
@@ -419,20 +422,36 @@ wooltree = r'(ROOT (S (PP (IN As) (NP (DT a) (NN result))) (, ,) (NP (NP (NN woo
 # <markdowncell>
 # # Cheatsheet
 
-# <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/options.png" />
+# <markdowncell>
+# ### Some possible queries:
+
+# <codecell>
+head_of_np = r'/NN.?/ >># NP'
+processes = r'/VB.?/ >># VP >+(VP) VP'
+proper_np = r'NP <# NNP' # use titlefilter!
+open_classes = r'/\b(JJ|NN|VB|RB)+.?\b/'
+closed_classes = r'/\b(DT|IN|CC|EX|W|MD|TO|PRP)+.?\b/'
+clauses = r'/^(S|SBAR|SINV|SQ|SBARQ)$/'
+firstperson = r'/PRP.?/ < /(?i)^(i|me|my)$/'
+thirdperson = r'/PRP.?/ < /(?i)^(he|she|it|they|them|him|her)$/'
+questions = r'ROOT <<- /.?\?.?/'
+
+# <markdowncell>
+# ### `plotter()` arguments:
+
 # <br>
 #
 #  | plotter() argument | Mandatory/default?       |  Use          | Type  |
 #  | :------|:------- |:-------------|:-----|
 #  | *title* | **mandatory**      | A title for your plot | string |
 #  | *results* | **mandatory**      | the results you want to plot | *interrogator()* total |
-#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator(-C) form) |
+#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator('c') form) |
 #  | *num_to_plot* | 7     | number of top results to display     |   integer |
 #  | *multiplier* | 100     | result * multiplier / total: use 1 for ratios | integer |
-#  | *x_label* | False    | custom label for the x-axis     |  string |
-#  | *y_label* | False    | custom label for the y-axis     |  string |
+#  | *x_label*, *y_label* | False    | custom label for axes     |  string |
 #  | *yearspan* | False    | plot a span of years |  a list of two int years |
 #  | *justyears* | False    | plot specific years |  a list of int years |
 #  | *csvmake* | False    | make csvmake the title of csv output file    |  string |
 
+# <markdowncell>
+# 
