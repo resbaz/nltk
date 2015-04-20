@@ -119,14 +119,16 @@ HTML('<iframe src=http://www.unimelb.edu.au/malcolmfraser/ width=700 height=350>
 
 # <codecell>
 import os
+
+# <codecell>
 # import tokenizers
-from nltk import word_tokenize
-from nltk.text import Text
+# from nltk import word_tokenize
+# from nltk.text import Text
 
 # <codecell>
 # make a list of files in the directory 'UMA_Fraser_Radio_Talks'
 files = os.listdir('corpora/UMA_Fraser_Radio_Talks')
-files[:3]
+print files[:3]
 
 # <markdowncell>
 # Actually, since we'll be referring to this path quite a bit, let's make it into a variable. This makes our code easier to use on other projects (and saves typing)
@@ -155,14 +157,18 @@ print text
 # We can ask Python to show us just the start of the file. For analysing the text, it is useful to split the metadata section off, so that we can interrogate it separately but also so that it won't distort our results when we analyse the text.
 
 # <codecell>
+# new:
+data = text.split("<!--end metadata-->")
+
+# <codecell>
+# old, maybe not needed:
 # open the first file, read it and then split it into two parts, metadata and body
 data = open(os.path.join(corpus_path, os.listdir(corpus_path)[0])).read().split("<!--end metadata-->")
 # notice that many different commands can be strung together in one line!
 
 # <codecell>
 # view the first part
-data[0]
-# put print before this to change the way you see it!
+print data[0]
 
 # <codecell>
 # split into lines, add '*' to the start of each line
@@ -350,8 +356,8 @@ cfdist3.plot()
 
 # <codecell>
 import re
-# a path to our soon-to-be organised corpus
-newpath = 'corpora/fraser-annual'
+# a path to our soonwordso-be organised corpus
+newpath = 'corpora/fraser-structured'
 #if not os.path.exists(newpath):
     #os.makedirs(newpath)
 files = os.listdir(corpus_path)
@@ -359,7 +365,8 @@ files = os.listdir(corpus_path)
 yearfinder = re.compile('[0-9]{4}')
 for filename in files:
     # split file contents at end of metadata
-    data = open(os.path.join(corpus_path, filename)).read().split("<!--end metadata-->")
+    text = open(os.path.join(corpus_path, filename))
+    data = text.read().split("<!--end metadata-->")
     # get date from data[0]
     # use our metadata parser to get metadata
     metadata = parse_metadata(data[0])
@@ -412,7 +419,7 @@ clear_output()
 # | ----------------- | ---------------------------------- | |
 # | *searchtree()*  | find things in a parse tree         | |
 # | *interrogator()*  | interrogate parsed corpora         | |
-# | *plotter()*       | visualise *interrogator()* results | |
+# | *plot()*       | visualise *interrogator()* results | |
 # | *quickview()*     | view *interrogator()* results      | |
 # | *tally()*       | get total frequencies for *interrogator()* results      | |
 # | *surgeon()*       | edit *interrogator()* results      | |
@@ -421,8 +428,11 @@ clear_output()
 
 # <codecell>
 import corpkit
-from corpkit import interrogator, plotter
-
+from corpkit import (
+    interrogator, plotter, table, quickview, 
+    tally, surgeon, merger, conc, keywords, 
+    collocates, quicktree, searchtree
+                    )
 # <markdowncell>
 # We also need to set the path to our corpus as a variable. If you were using this interface for your own corpora, you would change this to the path to your data.
 
@@ -446,7 +456,7 @@ melbtree = (r'(ROOT (S (NP (NNP Melbourne)) (VP (VBZ has) (VP (VBN been) (VP (VB
 # Notice that an OCR error caused a parsing error. Oh well. Here's a visual representation, drawn with NLTK:
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/melbtree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/melbtree.png" />
 # <br>
 # <markdowncell>
 # The data is annotated at word, phrase and clause level. Embedded here is an elaboration of the meanings of tags *(ask Daniel if you need some clarification!)*:
@@ -496,7 +506,7 @@ query = r'NP !<< /Melb.?/'
 searchtree(melbtree, query)
 
 # <markdowncell>
-# The dollar specifies a sibling relationship between two parts of the tree---that is, two words or tags that are horizontally aligned.
+# The dollar specifies a sibling relationship between two parts of the tree--wordshat is, two words or tags that are horizontally aligned.
 
 # <codecell>
 # NP with a sister VP
@@ -537,7 +547,7 @@ searchtree(melbtree, query)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/colombotree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/colombotree.png" />
 # <br>
 
 # <codecell>
@@ -551,7 +561,7 @@ colombotree = r'(ROOT (S (NP (PRP We)) (VP (VBP continue) (S (VP (TO to) (VP (VB
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/wooltree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/wooltree.png" />
 # <br>
 
 # <codecell>
@@ -594,15 +604,15 @@ allwords_query = r'/[A-Za-z0-9]/ !< __'
 # 1. **path to corpus** (the *path* variable)
 #
 # 2. Tregex **options**:
-#   * **'-t'**: return only words
-#   * **'-C'**: return a count of matches
+#   * **'t'**: return only words
+#   * **'c'**: return a count of matches
 #
 # 3. the **Tregex query**
 
-# We only need to count tokens, so we can use the **-C** option (it's often faster than getting lists of matching tokens). The cell below will run *interrogator()* over each annual subcorpus and count the number of matches for the query.
+# We only need to count tokens, so we can use the **count** option (it's often faster than getting lists of matching tokens). The cell below will run *interrogator()* over each annual subcorpus and count the number of matches for the query.
 
 # <codecell>
-allwords = interrogator(path, '-C', allwords_query) 
+allwords = interrogator(path, 'count', allwords_query) 
 
 # <markdowncell>
 # When the interrogation has finished, we can view the total counts by getting the *totals* branch of the *allwords* interrogation:
@@ -621,22 +631,22 @@ print allwords.query
 # Plotting results
 
 # <markdowncell>
-# Lists of years and totals are pretty dry. Luckily, we can use the *plotter()* function to visualise our results. At minimum, *plotter()* needs two arguments:
+# Lists of years and totals are pretty dry. Luckily, we can use the *plot()* function to visualise our results. At minimum, *plot()* needs two arguments:
 
 # 1. a title (in quotation marks)
 # 2. a list of results to plot
 
 # <codecell>
-plotter('Word counts in each subcorpus', allwords.totals)
+plot('Word counts in each subcorpus', allwords.totals)
 
 # <markdowncell>
 # Great! So, we can see that the number of words per year varies quite a lot. That's worth keeping in mind.
 
-# Next, let's plot something more specific, using the **-t** option.
+# Next, let's plot something more specific, using the **words** option.
 
 # <codecell>
 query = r'/(?i)\baustral.?/' # australia, australian, australians, etc.
-aust = interrogator(path, '-t', query) # -t option to get matching words, not just count
+aust = interrogator(path, 'words', query) # words option to get matching words, not just count
 
 # <markdowncell>
 # We now have a list of words matching the query stores in the *aust* variable's *results* branch:
@@ -652,26 +662,26 @@ aust.results[:3] # just the first few entries
 
 # <codecell>
 # as a percentage of all aust* words:
-plotter('Austral*', aust.results, fract_of = aust.totals)
+plot('Austral*', aust.results, fract_of = aust.totals)
 # as a percentage of all words (using our previous interrogation)
-plotter('Austral*', aust.results, fract_of = allwords.totals)
+plot('Austral*', aust.results, fract_of = allwords.totals)
 
 # <markdowncell>
-# Great! So, we now have a basic understanding of the *interrogator()* and *plotter()* functions.
+# Great! So, we now have a basic understanding of the *interrogator()* and *plot()* functions.
 
 # <headingcell level=3>
 # Customising visualisations
 
 # <markdowncell>
-# By default, *plotter()* plots the absolute frequency of the seven most frequent results.
+# By default, *plot()* plots the absolute frequency of the seven most frequent results.
 
-#  We can use other *plotter()* arguments to customise what our chart shows. *plotter()*'s possible arguments are:
+#  We can use other *plot()* arguments to customise what our chart shows. *plot()*'s possible arguments are:
 
-#  | plotter() argument | Mandatory/default?       |  Use          | Type  |
+#  | plot() argument | Mandatory/default?       |  Use          | Type  |
 #  | :------|:------- |:-------------|:-----|
 #  | *title* | **mandatory**      | A title for your plot | string |
 #  | *results* | **mandatory**      | the results you want to plot | *interrogator()* total |
-#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator(-C) form) |
+#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator(count) form) |
 #  | *num_to_plot* | 7     | number of top results to display     |   integer |
 #  | *multiplier* | 100     | result * multiplier / total: use 1 for ratios | integer |
 #  | *x_label* | False    | custom label for the x-axis     |  string |
@@ -684,11 +694,11 @@ plotter('Austral*', aust.results, fract_of = allwords.totals)
 
 # <codecell>
 # maybe we want to get rid of all those non-words?
-plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y_label = 'Percentage of all words')
+plot('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y_label = 'Percentage of all words')
 
 # <codecell>
 # or see only the 1960s?
-plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, yearspan = [1960,1969])
+plot('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, yearspan = [1960,1969])
 
 # <markdowncell>
 # **Your Turn**: mess with these variables, and see what you can plot. Try using some really infrequent results, if you like!
@@ -703,7 +713,7 @@ plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y
 # Viewing and editing results
 
 # <markdowncell>
-# Aside from *interrogator()* and *plotter()*, there are also a few simple functions for viewing and editing results.
+# Aside from *interrogator()* and *plot()*, there are also a few simple functions for viewing and editing results.
 
 # <headingcell level=4>
 # quickview()
@@ -758,7 +768,7 @@ tally(aust.results[:10], 'all')
 
 # <codecell>
 non_words_removed = surgeon(aust.results, [5, 9], remove = True)
-plotter('Some non-words removed', non_words_removed, fract_of = allwords.totals)
+plot('Some non-words removed', non_words_removed, fract_of = allwords.totals)
 
 # <markdowncell>
 # Note that you do not access surgeon lists with *aust.non_words_removed* syntax, but simply with *non_words_removed*.
@@ -780,10 +790,10 @@ plotter('Some non-words removed', non_words_removed, fract_of = allwords.totals)
 
 # <codecell>
 # before:
-plotter('Before merging Australian and Australians', aust.results, num_to_plot = 3)
+plot('Before merging Australian and Australians', aust.results, num_to_plot = 3)
 # after:
 merged = merger(aust.results, [1, 2],  newname = 'australian(s)')
-plotter('After merging Australian and Australians', merged, num_to_plot = 2)
+plot('After merging Australian and Australians', merged, num_to_plot = 2)
 
 # <headingcell level=4>
 # conc()
@@ -807,7 +817,7 @@ randoms = conc(os.path.join(path,'1963'), r'/(?i)\baustral.?/', random = 5)
 randoms
 
 # <markdowncell>
-# *conc()* takes another argument, window, which alters the amount of co-text appearing either side of the match.
+# *conc()* takes another argument, window, which alters the amount of cowordsext appearing either side of the match.
 
 # <codecell>
 conc(os.path.join(path,'1981'), r'/(?i)\baustral.?/', random = 5, window = 50)
@@ -854,7 +864,7 @@ conc(os.path.join(path,'1954'), r'/(?i)\baustral.?/', random = 5, window = 30, t
 
 # * Mood types (*declarative, interrogative, imperative*)
 # * Modality (*would, can, might*)
-# * Lexical density---the number of words per clause, the number of content to non-content words, etc.
+# * Lexical density--wordshe number of words per clause, the number of content to non-content words, etc.
 
 # Lexical density is usually a good indicator of the general tone of texts. The language of academia, for example, often has a huge number of nouns to verbs. We can approximate an academic tone simply by making nominally dense clauses: 
 
@@ -894,11 +904,11 @@ conc(os.path.join(path,'1954'), r'/(?i)\baustral.?/', random = 5, window = 30, t
 # number of content words per clause
 openwords = r'/\b(JJ|NN|VB|RB)+.?\b/'
 clauses = r'S < __'
-opencount = interrogator(path, '-C', openwords)
-clausecount = interrogator(path, '-C', clauses)
+opencount = interrogator(path, 'count', openwords)
+clausecount = interrogator(path, 'count', clauses)
 
 # <codecell>
-plotter('Lexical density', opencount.totals, 
+plot('Lexical density', opencount.totals, 
         fract_of = clausecount.totals, y_label = 'Lexical Density Score', multiplier = 1)
 
 # <markdowncell>
@@ -912,43 +922,43 @@ plotter('Lexical density', opencount.totals,
 
 # <codecell>
 query = r'MD < __'
-modals = interrogator(path, '-t', query)
-plotter('Modals', modals.results, fract_of = modals.totals)
+modals = interrogator(path, 'words', query)
+plot('Modals', modals.results, fract_of = modals.totals)
 
 # <codecell>
 # percentage of tokens that are I/me
 query = r'/PRP.?/ < /(?i)^(i|me|my)$/'
-firstperson = interrogator(path, '-C', query)
+firstperson = interrogator(path, 'count', query)
 
 # <codecell>
-plotter('First person', firstperson.totals, fract_of = allwords.totals)
+plot('First person', firstperson.totals, fract_of = allwords.totals)
 
 # <codecell>
 # percentage of questions
 query = r'ROOT <<- /.?\?.?/'
-questions = interrogator(path, '-C', query)
+questions = interrogator(path, 'count', query)
 
 # <codecell>
-plotter('Questions/all clauses', questions.totals, fract_of = clausecount.totals)
+plot('Questions/all clauses', questions.totals, fract_of = clausecount.totals)
 
 # <codecell>
 # ratio of open/closed class words
 closedwords = r'/\b(DT|IN|CC|EX|W|MD|TO|PRP)+.?\b/'
-closedcount = interrogator(path, '-C', closedwords)
+closedcount = interrogator(path, 'count', closedwords)
 
 # <codecell>
-plotter('Open/closed word classes', opencount.totals, 
+plot('Open/closed word classes', opencount.totals, 
         fract_of = closedcount.totals, y_label = 'Open/closed ratio', multiplier = 1)
 
 # <codecell>
 # ratio of nouns/verbs
 nouns = r'/NN.?/ < __'
 verbs = r'/VB.?/ < __'
-nouncount = interrogator(path, '-C', nouns)
-verbcount = interrogator(path, '-C', verbs)
+nouncount = interrogator(path, 'count', nouns)
+verbcount = interrogator(path, 'count', verbs)
 
 # <codecell>
-plotter('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multiplier = 1)
+plot('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multiplier = 1)
 
 # <headingcell level=4>
 # Experiential features of Fraser's speech
@@ -959,10 +969,10 @@ plotter('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multip
 # <codecell>
 # heads of participants (heads of NPS not in prepositional phrases)
 query = r'/NN.?/ >># (NP !> PP)'
-participants = interrogator(path, '-t', query, lemmatise = True)
+participants = interrogator(path, 'words', query, lemmatise = True)
 
 # <codecell>
-plotter('Participants', participants.results, fract_of = allwords.totals)
+plot('Participants', participants.results, fract_of = allwords.totals)
 
 # <markdowncell>
 # Next, we can get the most common processes. That is, the rightmost verb in a verbal group (take a look at the visualised tree!)
@@ -972,10 +982,10 @@ plotter('Participants', participants.results, fract_of = allwords.totals)
 # <codecell>
 # most common processes
 query = r'/VB.?/ >># VP >+(VP) VP'
-processes = interrogator(path, '-t', query, lemmatise = True)
+processes = interrogator(path, 'words', query, lemmatise = True)
 
 # <codecell>
-plotter('Processes', processes.results[2:], fract_of = processes.totals)
+plot('Processes', processes.results[2:], fract_of = processes.totals)
 
 # <markdowncell>
 # It seems that the verb *believe* is a common process in 1973. Try to run *conc()* in the cell below to look at the way the word behaves.
@@ -1000,10 +1010,10 @@ pn_query = r'NP <# NNP'
 
 # <codecell>
 # Proper noun groups
-propernouns = interrogator(path, '-t', pn_query, titlefilter = True)
+propernouns = interrogator(path, 'words', pn_query, titlefilter = True)
 
 # <codecell>
-plotter('Proper noun groups', propernouns.results, fract_of = propernouns.totals, num_to_plot = 15)
+plot('Proper noun groups', propernouns.results, fract_of = propernouns.totals, num_to_plot = 15)
 
 # <markdowncell>
 # Proper nouns are a really good category to investigate further, as it is through proper nouns that we can track discussion of particular people, places or things. So, let's look at the top 100 results:
@@ -1019,7 +1029,7 @@ merged = merger(propernouns.results, [9, 13, 27, 36, 78, 93], newname = 'places 
 quickview(merged, n = 100)
 
 ausparts = surgeon(merged, [7, 9, 23, 25, 33, 41, 49], remove = False)
-plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
+plot('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <markdowncell>
 # Neat, eh? Well, that concludes the structured part of the lesson. You now have a bit of time to explore the corpus, using the tools provided. Below, for your convenience, is a table of the functions and their arguments.
@@ -1028,7 +1038,7 @@ plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/options.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/options.png" />
 # <br>
 
 # <codecell>

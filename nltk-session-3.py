@@ -169,6 +169,7 @@ from corpkit import (
     tally, surgeon, merger, conc, keywords, 
     collocates, quicktree, searchtree
                     )
+from resources.scripts import plot
 
 # <markdowncell>
 # Here's an overview of each function's purpose:
@@ -178,7 +179,7 @@ from corpkit import (
 # | *quicktree()*  | draw a syntax tree         | |
 # | *searchtree()*  | find things in a parse tree         | |
 # | *interrogator()*  | interrogate parsed corpora         | |
-# | *plotter()*       | visualise *interrogator()* results | |
+# | *plot()*       | visualise *interrogator()* results | |
 # | *quickview()*     | view *interrogator()* results      | |
 # | *tally()*       | get total frequencies for *interrogator()* results      | |
 # | *surgeon()*       | edit *interrogator()* results      | |
@@ -437,11 +438,11 @@ thirdperson = r'/PRP.?/ < /(?i)^(he|she|it|they|them|him|her)$/'
 questions = r'ROOT <<- /.?\?.?/'
 
 # <markdowncell>
-# ### `plotter()` arguments:
+# ### `plot()` arguments:
 
 # <br>
 #
-#  | plotter() argument | Mandatory/default?       |  Use          | Type  |
+#  | plot() argument | Mandatory/default?       |  Use          | Type  |
 #  | :------|:------- |:-------------|:-----|
 #  | *title* | **mandatory**      | A title for your plot | string |
 #  | *results* | **mandatory**      | the results you want to plot | *interrogator()* total |
