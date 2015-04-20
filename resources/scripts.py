@@ -116,46 +116,134 @@ def structure_corpus(oldpath, newpath):
 #   For use in ResBaz NLTK stream
 #   Author: Daniel McDonald
 
-def plot(title, results, fract_of = False, y_label = False, 
-    num_to_plot = 7, multiplier = 100, yearspan = False,
-     justyears = False, csvmake = False, x_label = False):
+
+def plot(title, results, sort_by = 'total', fract_of = False, y_label = False, 
+    num_to_plot = 7, significance_level = 0.05,
+    multiplier = 100, yearspan = False, proj63 = 5,
+    justyears = False, csvmake = False, x_label = False, legend_p = False,
+    legend_totals = False, log = False, figsize = 11, save = False, 
+    only_below_p = False, skip63 = False, projection = True):
     """
-    Takes interrogator output and plots it with matplotlib
+    Visualise interrogator() results, optionally generating a csv as well.
 
-    title: String for chart title
-    results: results in interrogator() output format.
-        Results created with -C will not generate a legend.
-    fract_of: a list of totals by which results will be divided. 
-        The list should be in interrogator() -C output format. 
-        By default, results will be multiplied by 100. 
-        Absolute frequencies are given if false/omitted.
-    num_to_plot: the top n results to be plotted (default 10)
-    y_label: name for the y-axis (optional)
-    multiplier: result * multiplier / total. 
-        Use 100 for percentage, 1 for ratio.
-    projection: project or do not project 1963 and 2014
-    justyears = a list of years as integers to plot
-    csvmake: enter filename as a string to make a csv file
+    Parameters
+    ----------
+
+    title : string
+        Chart title
+    results : list
+        interrogator() results or totals (deaults to results)
+    sort_by : string
+        'total': sort by most frequent
+        'increase': calculate linear regression, sort by steepest up slope
+        'decrease': calculate linear regression, sort by steepest down slope 
+        'static': calculate linear regression, sort by least slope
+    fract_of : list
+        measure results as a fraction (default: as a percentage) of this list.
+        usually, use interrogator() totals
+    multiplier : int
+        mutliply results list before dividing by fract_of list
+        Default is 100 (for percentage), can use 1 for ratios
+    y_label : string
+        text for y-axis label (default is 'Absolute frequency'/'Percentage') 
+    X_label : string
+        text for x-axis label (default is 'Group'/'Year')
+    num_to_plot : int
+        How many top entries to show
+    significance_level : float
+        If using sort_by, set the p threshold (default 0.05)
+    only_below_p : Boolean
+        Do not plot any results above p value
+    yearspan : list with two ints
+        Get only results between the specified ints
+    justyears : list of ints
+        Get only results from the listed subcorpora
+    csvmake : True/False/string
+        Generate a CSV of plotted and all results with string as filename
+        If True, 'title' string is used
+    legend_totals : Boolean
+        Show total frequency of each result, or overall percentage if fract_of
+    legend_p : Boolean
+        Show p-value for slope when using sort_by
+    log : False/'x'/'y'/'x, y'
+        Use logarithmic axes
+    figsize = int
+        Size of image
+    save = True/False/string
+        Generate save image with string as filename
+        If True, 'title' string is used for name
+
+    NYT-only parameters
+    -----
+    skip63 : boolean
+        Skip 1963 results (for NYT investigation)
+    projection : boolean
+        Project 1963/2014 results (for NYT investigation)
+    proj63 : int
+        The amount to project 1963 results by
+
+    Example
+    -----
+    from corpkit import interrogator, plotter
+    corpus = 'path/to/corpus'
+    adjectives = interrogator(corpus, 'words', r'/JJ.?/ < __')
+    plotter('Most common adjectives', adjectives.results, fract_of = adjectives.totals,
+            csvmake = True, legend_totals = True)
+
     """
 
-    # new options plan: smooth lines ...
-
-    import matplotlib.pyplot as plt
-    import pylab
-    import numpy as np
     import os
+    import warnings
+    import copy
     from time import localtime, strftime
-    from IPython.display import display, clear_output
-    from matplotlib.ticker import MaxNLocator
+    
+    import matplotlib.pyplot as plt
+    from matplotlib import rc
+    from matplotlib.ticker import MaxNLocator, ScalarFormatter
+    import pylab
     from pylab import rcParams
-    rcParams['figure.figsize'] = 9.6, 4.8
+    try:
+        get_ipython().getoutput()
+    except TypeError:
+        have_ipython = True
+    except NameError:
+        import subprocess
+        have_ipython = False
+    try:
+        from IPython.display import display, clear_output
+    except ImportError:
+        pass
+    from corpkit.query import check_dit, check_pytex, check_tex
+    from corpkit.edit import resorter, mather
+
+    # setup:
+
+    # size:
+    rcParams['figure.figsize'] = figsize, figsize/2
+    
+    #font
+    rcParams.update({'font.size': (figsize / 2) + 7}) # half your size plus seven
+    
+    # check what we're doing here.
+    have_python_tex = check_pytex()
+    on_cloud = check_dit()
+    have_tex = check_tex(have_ipython = have_ipython)
+
+
+    def skipper(interrogator_list):
+        """Takes a list and returns a version without 1963"""
+        skipped = []
+        skipped.append(interrogator_list[0]) # append word
+        for item in interrogator_list[1:]:
+            if type(item) != unicode and type(item) != str and item[0] != 1963:
+                skipped.append(item)
+        return skipped
 
     def yearskipper(interrogator_list, justyears):
         """Takes a list and returns only results from the years listed in justyears"""
-        
         skipped = []
         skipped.append(interrogator_list[0]) # append word
-        for item in interrogator_list:
+        for item in interrogator_list[1:]:
             if type(item) != unicode and type(item) != str:
                 for year in justyears:
                     if item[0] == year:
@@ -165,35 +253,34 @@ def plot(title, results, fract_of = False, y_label = False,
     def yearspanner(interrogator_list, yearspan):
         """Takes a list and returns results from between the first and last year in yearspan"""
         
-        skipped = []
-        skipped.append(interrogator_list[0]) # append word
-        for item in interrogator_list:
+        skipped = [interrogator_list[0]] # append word
+        for item in interrogator_list[1:]:
             if type(item) != unicode and type(item) != str:
                 if item[0] >= yearspan[0]:
-                    if item [0] <= yearspan[-1]:
+                    if item [0] <= yearspan[-1] + 1:
                         skipped.append(item)
         return skipped
 
-    def fraction_maker(first_list, second_list):
-        """Takes two lists and returns fraction totals for plotting"""
-        fractioned = []
-        for entry in first_list:
-            fractioned_entry = []
-            fractioned_entry.append(entry[0]) # append word
-            for part in entry[1:]:
-                numerator = part[1]
-                denominator_datum = second_list[entry.index(part)]
-                if denominator_datum[1] == 0:
-                    fraction = 0
-                else:
-                    fraction = numerator * multiplier / float(denominator_datum[1])
-                datum = [part[0], fraction]
-                fractioned_entry.append(datum)
-            fractioned.append(fractioned_entry)
-        return fractioned
+    def projector(interrogator_list):
+        """Takes a list and returns a version with projections"""
+        projected = []
+        projected.append(interrogator_list[0]) # append word
+        for item in interrogator_list[1:]:
+            if type(item) != str and type(item) != str and item[0] == 1963:
+                newtotal = item[1] * proj63
+                datum = [item[0], newtotal]
+                projected.append(datum)
+            elif type(item) != str and type(item) != str and item[0] == 2014:
+                newtotal = item[1] * 1.37
+                datum = [item[0], newtotal]
+                projected.append(datum)
+            else:
+                projected.append(item)
+        return projected
 
     def csvmaker(csvdata, csvalldata, csvmake):
         """Takes whatever ended up getting plotted and puts it into a csv file"""
+        # now that I know about Pandas, I could probably make this much less painful.
         csv = []
         yearlist = []
         # get list of years
@@ -201,10 +288,10 @@ def plot(title, results, fract_of = False, y_label = False,
             if type(entry) == list:
                 yearlist.append(str(entry[0]))
         # make first line
-        years = ','.join(yearlist)
-        # title then years for top row
-        topline = title + ',' + years
-        csv.append(topline)
+        csv.append(title)
+        # make the second line
+        years = ',' + ','.join(yearlist)
+        csv.append(years)
         # for each word
         for entry in csvdata:
             csvline = []
@@ -225,10 +312,10 @@ def plot(title, results, fract_of = False, y_label = False,
             if type(entry) == list:
                 yearlist.append(str(entry[0]))
         # make first line
-        years = ','.join(yearlist)
-        # title then years for top row
-        topline = title + ',' + years
-        csvall.append(topline)
+        csvall.append(title)
+        # make the second line
+        years = ',' + ','.join(yearlist)
+        csvall.append(years)
         # for each word
         for entry in csvalldata:
             csvallline = []
@@ -243,14 +330,15 @@ def plot(title, results, fract_of = False, y_label = False,
         csvall = '\n'.join(csvall)
         # write the csvall file?
         if os.path.isfile(csvmake):
-            raise ValueError("CSV error: " + csvmake + " already exists in current directory.")
+            raise ValueError("CSV error: %s already exists in current directory. \
+                    Move it, delete it, or change the name of the new .csv file." % csvmake)
         try:
             fo=open(csvmake,"w")
         except IOError:
             print "Error writing CSV file."
-        fo.write('Plotted results:\n\n'.encode("UTF-8"))
+        fo.write('Plotted results:\n'.encode("UTF-8"))
         fo.write(csv.encode("UTF-8"))
-        fo.write('\n\nAll results:\n\n'.encode("UTF-8"))
+        fo.write('\n\nAll results:\n'.encode("UTF-8"))
         fo.write(csvall.encode("UTF-8"))
         fo.close()
         time = strftime("%H:%M:%S", localtime())
@@ -258,155 +346,280 @@ def plot(title, results, fract_of = False, y_label = False,
 
     ##################################################################
 
-    # copy results and embed in list if need be.
+    # check for tex and use it if it's there
+    if have_tex:
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+        rc('text', usetex=True)
+
+    #image directory
+    if have_python_tex:
+        imagefolder = '../images'
+    else:
+        imagefolder = 'images'
+
+    # Use .results branch if branch is unspecified
+    if isinstance(results, tuple) is True:
+        warnings.warn('\nNo branch of results selected. Using .results ... ')
+        results = results.results
+    if only_below_p:
+        if sort_by == 'static':
+            warnings.warn('\nStatic trajectories will confirm the null hypothesis, so it might ' +
+                              'not be helpful to use both the static and only_below_p options together.')
+        if sort_by == 'total' or sort_by == 'name':
+            warnings.warn("\nP value has not been calculated. No entries will be excluded") 
+    
+    # cut short to save time if later results aren't useful
+    if csvmake or sort_by != 'total':
+        cutoff = len(results)
+    else:
+        cutoff = num_to_plot
+    
+    # if plotting one entry/a totals list, wrap it in another list
     if type(results[0]) == unicode or type(results[0]) == str:
         legend = False
-        data = [list(results)]
-        alldata = [list(results)]
+        alldata = [copy.deepcopy(results)][:cutoff]
+        num_to_plot = 1
     else:
         legend = True
-        data = list(results)
-        alldata = list(results)
+        alldata = copy.deepcopy(results[:cutoff])
 
-    # find out if we're doing years or not:
+    # determine if no subcorpora and thus barchart
+    if len(results[0]) == 3 or len(results[0]) == 4:
+        barchart = True
+    else:
+        barchart = False
+
+    # if no x_label, guess 'year' or 'group'
     if x_label:
         x_lab = x_label
     else:
-        check_x_axis = data[0] # get first entry
-        check_x_axis = check_x_axis[1] # get second entry of first entry (year, count)
-        if 1500 < check_x_axis[0] < 2050:
-            x_lab = 'Year'
+        if not barchart:
+            check_x_axis = alldata[0] # get first entry
+            check_x_axis = check_x_axis[1] # get second entry of first entry (year, count)
+            if 1500 < check_x_axis[0] < 2050:
+                x_lab = 'Year'
+            else:
+                x_lab = 'Group'
         else:
-            x_lab = 'Group'
-    # copy totals data so as to not edit it
-    if fract_of:
-        totals = list(fract_of)
-        # make fractions
-        fractdata = fraction_maker(data, totals)
-        data = list(fractdata)
-        alldata = list(fractdata)
+            x_lab = False
 
+
+    # select totals if no branch selected
+    if fract_of:
+        if isinstance(fract_of, tuple) is True:
+            warnings.warn('\nNo branch of fract_of selected. Using .totals ... ')
+            fract_of = fract_of.totals
+        # copy this, to be safe!
+        totals = copy.deepcopy(fract_of)
+
+        #use mather to make percentage results
+        fractdata = []
+        for entry in alldata:
+            fractdata.append(mather(entry, '%', totals, multiplier = multiplier))
+        alldata = copy.deepcopy(fractdata)
+    
+    # sort_by with resorter
+    if sort_by != 'total':
+        do_stats = True
+        alldata = resorter(alldata, sort_by = sort_by, 
+                           keep_stats = True, only_below_p = only_below_p, 
+                           significance_level = significance_level, skip63 = skip63)
+    else:
+        do_stats = False
     csvdata = []
     csvalldata = []
     final = []
-    # watercolour style:
-    #colours = ["#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3"]
-    #colours = ["#4D4D4D", "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0", "#B2912F", "#B276B2", "#DECF3F", "#F15854"]
     colours = ["#1f78b4", "#33a02c", "#e31a1c", "#ff7f00", "#6a3d9a", "#a6cee3", "#b2df8a", "#fb9a99", "#fdbf6f", "#cab2d6"]
-
     c = 0
-    # get an all data version if making csv
-    if csvmake:
-        for entry in alldata:
+    
+    if num_to_plot > len(alldata):
+        warnings.warn("There are not %d entries to show.\nPlotting all %d results..." % (num_to_plot, len(alldata)))
+    
+    if not csvmake:
+        cutoff = num_to_plot
+    
+    if not barchart:
+        for index, entry in enumerate(alldata[:cutoff]):
             # run called processes
+            if skip63:
+                entry = skipper(entry)
             if yearspan:
                 entry = yearspanner(entry, yearspan)
             if justyears:
                 entry = yearskipper(entry, justyears)
+            if projection:
+                if not fract_of:
+                    entry = projector(entry)
             # get word
             word = entry[0]
-            # for each datum [year, count]:
-
-            # If anybody is reading this, the following sections are nonfunctional 
-            #in ResBaz code, as they are mostly for use in NYT investigation. Sorry!
-
-            toplot = []
-            xvalsbelow = []
-            yvalsbelow = []
-            xvalsabove = []
-            yvalsabove = []
-            d = 1 # first tuple, maybe not very stable
-            tups = len(entry) - 2 # all tuples minus 1
-            for _ in range(tups):
-                firstpart = entry[d] # first tuple
-                firstyear = firstpart[0]
-                nextpart = entry[d + 1]
-                nextyear = nextpart[0]
-                diff = nextyear - firstyear
-                if nextyear - firstyear > 50: # change to 1 for nyt
-                    xvalsbelow.append(firstpart[0])
-                    yvalsbelow.append(firstpart[1])
-                    xvalsbelow.append(nextpart[0])
-                    yvalsbelow.append(nextpart[1])
-                else:
-                    xvalsabove.append(firstpart[0])
-                    yvalsabove.append(firstpart[1])
-                    xvalsabove.append(nextpart[0])
-                    yvalsabove.append(nextpart[1])
-                d += 1
-            csvalldata.append(entry)
-        # end repeated code
-    
-    # do code for actual plotting
-    
-    for entry in data[:num_to_plot]:
-        # run called processes
-        if justyears:
-            entry = yearskipper(entry, justyears)
-        if yearspan:
-            entry = yearspanner(entry, yearspan)
-        # get word
-        word = entry[0]
-        # for each datum [year, count]:
-        toplot = []
-        xvalsbelow = []
-        yvalsbelow = []
-        xvalsabove = []
-        yvalsabove = []
-        d = 1 # first tuple, maybe not very stable
-        # could use list index
-        tups = len(entry) - 2 # all tuples minus 1
-        for _ in range(tups):
-            firstpart = entry[d] # first tuple
-            firstyear = firstpart[0]
-            nextpart = entry[d + 1]
-            nextyear = nextpart[0]
-            if nextyear - firstyear > 50: # change to 1 for nyt
-                xvalsbelow.append(firstpart[0])
-                yvalsbelow.append(firstpart[1])
-                xvalsbelow.append(nextpart[0])
-                yvalsbelow.append(nextpart[1])
+            if do_stats:
+                pval = entry[-1][3]
+                p_short = "%.4f" % pval
+                p_string = ' (p=%s)' % p_short   
+                # remove stats, we're done with them.
+                entry.pop() 
+            # get totals ... horrible code
+            total = 0
+            if fract_of:
+                if entry[-1][0] == 'Total':
+                    num = entry[-1][1]
+                    total = "%.2f" % num
+                    #total = str(float(entry[-1][1]))[:5]
+                totalstring = ' (' + str(total) + '\%)'     
             else:
-                xvalsabove.append(firstpart[0])
-                yvalsabove.append(firstpart[1])
-                xvalsabove.append(nextpart[0])
-                yvalsabove.append(nextpart[1])
-            d += 1
-        if csvmake: # append exactly what was plotted...
-            csvdata.append(entry)
-
-        # do actual plotting
-        plt.plot(xvalsbelow, yvalsbelow, '--', color=colours[c])
-        plt.plot(xvalsabove, yvalsabove, '-', label=word, color=colours[c])
-        plt.plot(xvalsabove, yvalsabove, '.', color=colours[c]) # delete for nyt
-        if c == 8:
-            c = 0 # unpythonic
-        c += 1
-        
-        # old way to plot everything at once
-        #plt.plot(*zip(*toplot), label=word) # this is other projects...
+                if entry[-1][0] == 'Total':
+                    total = entry[-1][1]
+                totalstring = ' (n=%d)' % total
     
-    #make legend
-    if legend:
-        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+            entry.pop() # get rid of total. good or bad?
+            csvalldata.append(entry) 
+    
+            if index < num_to_plot:
+                csvdata.append(entry)
+                toplot = []
+                xvalsbelow = []
+                yvalsbelow = []
+                xvalsabove = []
+                yvalsabove = []
+                d = 1 # first tuple, maybe not very stable
+                tups = len(entry) - 2 # all tuples minus 2 (to skip totals tuple)
+                for _ in range(tups):
+                    firstpart = entry[d] # first tuple
+                    firstyear = firstpart[0]
+                    nextpart = entry[d + 1]
+                    nextyear = nextpart[0]
+                    if nextyear - firstyear > 50: # change to 1 for nyt
+                        xvalsbelow.append(firstpart[0])
+                        yvalsbelow.append(firstpart[1])
+                        xvalsbelow.append(nextpart[0])
+                        yvalsbelow.append(nextpart[1])
+                    else:
+                        xvalsabove.append(firstpart[0])
+                        yvalsabove.append(firstpart[1])
+                        xvalsabove.append(nextpart[0])
+                        yvalsabove.append(nextpart[1])
+                    d += 1
+                if csvmake: # append exactly what was plotted...
+                    csvdata.append(entry)
+        
+                # do actual plotting
+                plt.plot(xvalsbelow, yvalsbelow, '--', color=colours[c])
+                plt.plot(xvalsabove, yvalsabove, '-', label=word, color=colours[c])
+                plt.plot(xvalsabove, yvalsabove, '.', color=colours[c]) # delete for nyt
+
+                if c == 8:
+                    c = 0 # unpythonic
+                c += 1
+            
+            # old way to plot everything at once
+            #plt.plot(*zip(*toplot), label=word) # this is other projects...
+        
+        #make legend
+        if legend:
+            lgd = plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., fancybox=True, framealpha=0.5)
+
+    elif barchart:
+        rcParams['figure.figsize'] = figsize, figsize/2
+        cutoff = len(alldata)
+        import numpy as np
+        scores = [entry[1][1] for entry in alldata[:cutoff]]
+        ind = np.arange(cutoff)  # the x locations for the groups
+        width = 0.35       # the width of the bars
+
+        fig, ax = plt.subplots()
+        rects1 = ax.bar(ind, scores, width, color="#1f78b4")
+        
+        if len(results[0]) == 4:
+            compscores = [entry[2][1] for entry in alldata[:cutoff]]
+            rects2 = ax.bar(ind+width, compscores, width, color="#33a02c")
+        
+        # add some text for labels, title and axes ticks
+        
+        ax.set_xticks(ind+width)
+        
+        # get labels
+        labels = [entry[0] for entry in alldata[:cutoff]]
+        
+        longest = len(max(labels, key=len))
+        if longest > 7:
+            if figsize < 20:
+                if num_to_plot > 6:
+                    ax.set_xticklabels(labels, rotation=45)
+        else:
+            ax.set_xticklabels(labels)
+
+        # rotate the labels if they're long:
+
+        
+        #def autolabel(rects):
+            # attach some text labels
+            #for rect in rects:
+                #height = rect.get_height()
+                #ax.text(rect.get_x()+rect.get_width()/2., 1.0*height, '%d'%int(height),
+                        #ha='center', va='bottom')
+        
+        #autolabel(rects1)
+        #if len(results[0]) == 4:
+            #autolabel(rects2)
+        legend_labels = [alldata[0][1][0], alldata[0][2][0]]
+        ax.legend( (rects1[0], rects2[0]), legend_labels )
 
     # make axis labels
-    plt.xlabel(x_lab)
+    if x_lab:
+        plt.xlabel(x_lab)
+
     if not y_label:
         #print "Warning: no name given for y-axis. Using default."
         if fract_of:
             y_label = 'Percentage'
         if not fract_of:
             y_label = 'Total frequency'
-    # no decimals on x axis:
-    # make the chart
-    plt.gca().get_xaxis().set_major_locator(MaxNLocator(integer=True))
     plt.ylabel(y_label)
     pylab.title(title)
-    plt.ticklabel_format(useOffset=False, axis='x', style = 'plain')
-    plt.grid()
-    plt.show()
 
-    if csvmake:
-        csvmaker(csvdata, csvalldata, csvmake)
+    if not barchart:
+        plt.gca().get_xaxis().set_major_locator(MaxNLocator(integer=True))
         
+        if log == 'x':
+            plt.xscale('log')
+            plt.gca().get_xaxis().set_major_formatter(ScalarFormatter())
+        elif log == 'y':
+            plt.yscale('log')
+            plt.gca().get_yaxis().set_major_formatter(ScalarFormatter())
+        elif log == 'x, y':
+            plt.xscale('log')
+            plt.gca().get_xaxis().set_major_formatter(ScalarFormatter())
+            plt.yscale('log')
+            plt.gca().get_yaxis().set_major_formatter(ScalarFormatter())
+        else:
+            plt.ticklabel_format(useOffset=False, axis='x', style = 'plain')
+    plt.grid()
+    fig1 = plt.gcf()
+    if not have_python_tex:
+        plt.show()
+
+    def urlify(s):
+            import re
+            s = s.lower()
+            s = re.sub(r"[^\w\s]", '', s)
+            s = re.sub(r"\s+", '-', s)
+            return s     
+    
+    if save:
+        if type(save) == str:
+            savename = os.path.join(imagefolder, urlify(save) + '.png')
+        else:
+            savename = os.path.join(imagefolder, urlify(title) + '.png')
+        if legend and not barchart:
+                fig1.savefig(savename, bbox_extra_artists=(lgd,), bbox_inches='tight', dpi=150, transparent=True)
+        else:
+            fig1.savefig(savename, dpi=150, transparent=True)
+        time = strftime("%H:%M:%S", localtime())
+        if os.path.isfile(savename):
+            print time + ": " + savename + " created."
+        else:
+            raise ValueError("Error making %s." % savename)
+    if csvmake:
+        if type(csvmake) == bool:
+            csvmake = urlify(title) + '.csv'    
+        csvmaker(csvdata, csvalldata, csvmake)
