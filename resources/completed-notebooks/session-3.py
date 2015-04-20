@@ -4,7 +4,6 @@
 # <img style="float:left" src="http://ipython.org/_static/IPy_header.png" />
 # <br>
 
-
 # <headingcell level=1>
 # Session 3: Charting change in Fraser's speeches
 
@@ -27,6 +26,375 @@ from IPython.display import display, clear_output
 sys.path.append("/usr/lib/python2.7/site-packages/")
 %matplotlib inline
 
+
+# <markdowncell>
+# **Welcome back!**
+
+# So, what did we learn yesterday? A brief recap:
+
+# * The **IPython** Notebook
+# * **Python**: syntax, variables, functions, etc.
+# * **NLTK**: manipulating linguistic data
+# * **Corpus linguistic tasks**: tokenisation, keywords, collocation, stemming, concordances
+
+# Today's focus will be on **developing more advanced NLTK skills** and using these skills to **investigate the Fraser Speeches Corpus**. In the final session, we will discuss **how to use what you have learned here in your own research**.
+
+# *Any questions or anything before we dive in?*
+
+# <headingcell level=2>
+# Malcolm Fraser and his speeches
+
+# <markdowncell>
+# So, for much of the next two sessions, we are going to be working with a corpus of speeches made by Malcolm Fraser. 
+
+# <codecell>
+# this code allows us to display images and webpages in our notebook
+from IPython.display import display
+from IPython.display import display_pretty, display_html, display_jpeg, display_png, display_svg
+from IPython.display import Image
+from IPython.display import HTML
+import nltk
+
+# <codecell>
+Image(url='http://www.unimelb.edu.au/malcolmfraser/photographs/family/105~36fam6p9.jpg')
+
+# <markdowncell>
+# Because our project here is *corpus driven*, we don't necessarily need to know about Malcolm Fraser and his speeches in order to analyse the data: we may be happy to let things emerge from the data themselves. Even so, it's nice to know a bit about him.
+
+# Malcolm Fraser was a member of Australian parliament between 1955 and 1983, holding the seat of Wannon in western Victoria. He held a number of ministries, including Education and Science, and Defence. 
+
+# He became leader of the Liberal Party in March 1975 and Prime Minister of Australia in December 1975, following the dismissal of the Whitlam government in November 1975.
+
+# He retired from parliament following the defeat of the Liberal party at the 1983 election and in 2009 resigned from the Liberal party after becoming increasingly critical of some of its policies.
+
+# He can now be found on Twitter as **@MalcolmFraser12**
+
+# <codecell>
+HTML('<iframe src=http://en.wikipedia.org/wiki/Malcolm_Fraser width=700 height=350></iframe>')
+
+# <markdowncell>
+# In 2004, Malcolm Fraser made the University of Melbourne the official custodian of his personal papers. The collection consists of a large number of photographs, speeches and personal papers, including Neville Fraser's WWI diaries and materials relating to CARE Australia, which Mr Fraser helped to found in 1987. 
+
+# <codecell>
+HTML('<iframe src=http://www.unimelb.edu.au/malcolmfraser/ width=700 height=350></iframe>')
+
+# <markdowncell>
+# Every week, between 1954 until 1983, Malcolm Fraser made a talk to his electorate that was broadcast on Sunday evening on local radio.  
+
+# The speeches were transcribed years ago. Optical Character Recognition (OCR) was used to digitise the transcripts. This means that the texts are not of perfect quality. 
+
+# Some have been manually corrected, which has removed extraneous characters and mangled words, but even so there are still some quirks in the formatting. 
+
+# For much of this session, we are going to manipulate the corpus data, and use the data to restructure the corpus. 
+
+# <headingcell level=2>
+# Cleaning the corpus
+
+# <markdowncell>
+# A common part of corpus building is corpus cleaning. Reasons for cleaning include:
+
+# 1. Not break the code with unexpected input
+# 2. Ensure that searches match as many examples as possible
+# 3. Increasing readability, the accuracy of taggers, stemmers, parsers, etc.
+
+# The level of kind of cleaning depends on your data and the aims of your project. In the case of very clean data (lucky you!), there may be little that needs to be done. With messy data, you may need to go as far as to correct variant spellings (online conversation, very old books).
+
+# <headingcell level=3>
+# Discussion
+
+# <markdowncell>
+# *What are the characteristics of clean and messy data? Any personal experiences? Discuss with your neighbours.* 
+
+# It will be important to bear these characteristics in mind once you start building your own datasets and corpora. 
+
+# <headingcell level=2>
+# Exploring the corpus
+
+# <markdowncell>
+# First of all, let's load in our text.
+
+# Via file management, open and inspect one file in *corpora/UMA_Fraser_Radio_Talks*. What do you see? Are there any potential problems?
+
+# We can also look at file contents within the IPython Notebook itself:
+
+# <codecell>
+import os
+
+# <codecell>
+# import tokenizers
+# from nltk import word_tokenize
+# from nltk.text import Text
+
+# <codecell>
+# make a list of files in the directory 'UMA_Fraser_Radio_Talks'
+files = os.listdir('corpora/UMA_Fraser_Radio_Talks')
+print files[:3]
+
+# <markdowncell>
+# Actually, since we'll be referring to this path quite a bit, let's make it into a variable. This makes our code easier to use on other projects (and saves typing)
+
+# <codecell> 
+corpus_path = 'corpora/UMA_Fraser_Radio_Talks'
+
+# <markdowncell>
+# We can now tell Python to get the contents of a file in the file list and print it:
+
+# <codecell>
+# print file contents
+# change zero to something else to print a different file
+f = open(os.path.join(corpus_path, files[0]), "r")
+text = f.read()
+print text
+
+# <headingcell level=3>
+# Exploring further: splitting up text
+
+# <markdowncell>
+# We've had a look at one file, but the real strength of NLTK is to be able to explore large bodies of text. 
+
+# When we manually inspected the first file, we saw that it contained a metadata section, before the body of the text. 
+
+# We can ask Python to show us just the start of the file. For analysing the text, it is useful to split the metadata section off, so that we can interrogate it separately but also so that it won't distort our results when we analyse the text.
+
+# <codecell>
+# new:
+data = text.split("<!--end metadata-->")
+
+# <codecell>
+# old, maybe not needed:
+# open the first file, read it and then split it into two parts, metadata and body
+data = open(os.path.join(corpus_path, os.listdir(corpus_path)[0])).read().split("<!--end metadata-->")
+# notice that many different commands can be strung together in one line!
+
+# <codecell>
+# view the first part
+print data[0]
+
+# <codecell>
+# split into lines, add '*' to the start of each line
+# \r is a carriage return, like on a typewriter.
+# \n is a newline character
+for line in data[0].split('\r\n'):
+    print '*', line
+
+# <codecell>
+# skip empty lines and any line that starts with '<'
+for line in data[0].split('\r\n'):
+    if not line:
+        continue
+    if line[0] == '<':
+        continue
+    print '*', line
+
+# <codecell>
+# split the metadata items on ':' so that we can interrogate each one
+for line in data[0].split('\r\n'):
+    if not line:
+        continue
+    if line[0] == '<':
+        continue
+    element = line.split(':')
+    print '*', element
+
+# <codecell>
+# actually, only split on the first colon
+for line in data[0].split('\r\n'):
+    if not line:
+        continue
+    if line[0] == '<':
+        continue
+    element = line.split(':', 1)
+    print '*', element
+
+# <headingcell level=3>
+# **Challenge**: Building a Dictionary
+
+# <markdowncell>
+# We've already worked with strings, integers, and lists. Another kind of data structure in Python is a *dictionary*.
+
+# Here is how a simple dictionary works:
+
+# <codecell>
+# create a dictionary
+commonwords = {'the': 4023, 'of': 3809, 'a': 3098}
+# search the dictionary for 'of'
+commonwords['of']
+
+# <codecell>
+type(commonwords)
+
+# <markdowncell>
+# The point of dictionaries is to store a *key* (the word) and a *value* (the count). When you ask for the key, you get its value.
+
+# Notice that you use curly braces for dictionaries, but square brackets for lists.
+
+# Dictionaries are a great way to work with the metadata in our corpus. Let's build a dictionary called *metadata*:
+
+# Your first line will look like this:
+
+#       metadata = {}
+
+# <codecell>
+metadata = {}
+for line in data[0].split('\r\n'):
+    if not line:
+        continue
+    if line[0] == '<':
+        continue
+    element = line.split(':', 1)
+    metadata[element[0]] = element[-1]
+print metadata
+
+# <codecell>
+# look up the date
+print metadata['Date']
+
+# <headingcell level=3>
+# Building functions
+
+# <markdowncell>
+# **Challenge**: define a function that creates a dictionary of the metadata for each file and gets rid of the whitespace at the start of each element
+
+# **Hint**: to get rid of the whitespace use the *.strip()* command.
+
+# <codecell>
+# open the first file, read it and then split it into two parts, metadata and body
+data = open(os.path.join(corpus_path, 'UDS2013680-100-full.txt'))
+data = data.read().split("<!--end metadata-->")
+
+# <codecell>
+def parse_metadata(text):
+    metadata = {}
+    for line in text.split('\r\n'):
+        if not line:
+            continue
+        if line[0] == '<':
+            continue
+        element = line.split(':', 1)
+        metadata[element[0]] = element[-1].strip(' ')
+    return metadata
+
+# <markdowncell>
+# Test it out!
+
+# <codecell>
+parse_metadata(data[0])
+
+# <markdowncell>
+# Now that we're confident that the function works, let's find out a bit about the corpus.
+# As a start, it would be useful to know which years the texts are from. Are they evenly distributed over time? A graph will tell us!
+
+# <codecell>
+#import conditional frequency distribution
+from nltk.probability import ConditionalFreqDist
+import matplotlib
+% matplotlib inline
+cfdist = ConditionalFreqDist()
+for filename in os.listdir(corpus_path):
+    text = open(os.path.join(corpus_path, filename)).read()
+    #split text of file on 'end metadata'
+    text = text.split("<!--end metadata-->")
+    #parse metadata using previously defined function "parse_metadata"
+    metadata = parse_metadata(text[0])
+    #skip all speeches for which there is no exact date
+    if metadata['Date'][0] == 'c':
+        continue
+    #build a frequency distribution graph by year, that is, take the final bit of the 'Date' string after '/'
+    cfdist['count'][metadata['Date'].split('/')[-1]] += 1
+cfdist.plot()
+
+# <markdowncell>
+# Now let's build another graph, but this time by the 'Description' field:
+
+# <codecell>
+cfdist2 = ConditionalFreqDist()
+for filename in os.listdir(corpus_path):
+    text = open(os.path.join(corpus_path, filename)).read()
+    text = text.split("<!--end metadata-->")
+    metadata = parse_metadata(text[0])
+    if metadata['Date'][0] == 'c':
+        continue
+    cfdist2['count'][metadata['Description']] += 1
+cfdist2.plot()
+
+# <headingcell level=4>
+# Discussion
+
+# <markdowncell>
+# We've got messy data! What's the lesson here?
+# <br>
+#
+# <markdowncell>
+# **Bonus chellenge**: Build a frequency distribution graph that includes speeches without an exact date.
+# Hint: you'll need to tell Python to ignore the 'c' and just take the digits
+
+# <codecell>
+cfdist3 = ConditionalFreqDist()
+for filename in os.listdir(corpus_path):
+    text = open(os.path.join(corpus_path, filename)).read()
+    text = text.split("<!--end metadata-->")
+    metadata = parse_metadata(text[0])
+    date = metadata['Date']
+    if date[0] == 'c':
+        year = date[1:]
+    elif date[0] != 'c':
+        year = date.split('/')[-1]
+    cfdist3['count'][year] += 1
+cfdist3.plot()
+
+# <headingcell level=3>
+# Structuring our data by metadata feature
+
+# <markdowncell>
+# Because our data samples span a long stretch of time, we thought we'd investigate the ways in which Malcolm Fraser's language changes over time. This will be the key focus of the next session.
+
+# In order to study this, it is helpful to structure our data according to the year of the sample. This simply means creating folders for each sample year, and moving each text into the correct one.
+
+# We can use our metadata parser to help with this task. Then, after structuring our corpus by date, we want the metadata gone, so that when we count language features in the files, we are not also counting the metadata.
+
+# So, let's try this:
+
+# <codecell>
+import re
+# a path to our soonwordso-be organised corpus
+newpath = 'corpora/fraser-structured'
+#if not os.path.exists(newpath):
+    #os.makedirs(newpath)
+files = os.listdir(corpus_path)
+# define a regex to match year portion of date
+yearfinder = re.compile('[0-9]{4}')
+for filename in files:
+    # split file contents at end of metadata
+    text = open(os.path.join(corpus_path, filename))
+    data = text.read().split("<!--end metadata-->")
+    # get date from data[0]
+    # use our metadata parser to get metadata
+    metadata = parse_metadata(data[0])
+    #look up date field of dict entry
+    date = metadata.get('Date')
+    # search date for year
+    yearmatch = re.search(yearfinder, str(date))
+    #get the year as a string
+    year = str(yearmatch.group())
+    # make a directory with the year name
+    if not os.path.exists(os.path.join(newpath, year)):
+        os.makedirs(os.path.join(newpath, year))
+    # make a new file with the same name as the old one in the new dir
+    fo = open(os.path.join(newpath, year, filename),"w")
+    # write the content portion, without metadata
+    fo.write(data[1])
+    fo.close()
+
+# <markdowncell>
+# Did it work? How can we check?
+
+# <codecell>
+# print os.listdir(newpath)
+# print os.listdir(newpath + '/1981')
+
+# <headingcell level=2>
+# Using `corpkit` to analyse the Fraser Corpus
+
 # <markdowncell>
 # Next, we have to install Java, as some of the `corpkit` tools rely on Java code. You'll very likely have Java installed on your local machine, but we need it on the cloud. To make it work, run the following:
 
@@ -35,10 +403,10 @@ sys.path.append("/usr/lib/python2.7/site-packages/")
 clear_output()
 
 # <markdowncell>
-# Now, let's download and install `corpkit`:
+# Now, let's download and install `corpkit`, if we haven't already:
 
 # <codecell>
-! pip install corpkit
+# ! pip install corpkit
 
 # <markdowncell>
 # OK, that's out of the way. Next, let's import the functions we'll be using to investigate the corpus. These functions have been designed specifically for our investigation, but they will work with any parsed dataset.
@@ -51,21 +419,20 @@ clear_output()
 # | ----------------- | ---------------------------------- | |
 # | *searchtree()*  | find things in a parse tree         | |
 # | *interrogator()*  | interrogate parsed corpora         | |
-# | *plotter()*       | visualise *interrogator()* results | |
+# | *plot()*       | visualise *interrogator()* results | |
 # | *quickview()*     | view *interrogator()* results      | |
 # | *tally()*       | get total frequencies for *interrogator()* results      | |
 # | *surgeon()*       | edit *interrogator()* results      | |
 # | *merger()*       | merge *interrogator()* results      | |
 # | *conc()*          | complex concordancing of subcopora | |
 
-# We can import them using IPython Magic:
-
-
 # <codecell>
-import os # for joining paths
-from IPython.display import display, clear_output # for clearing huge lists of output
-# import functions to be used here:
-
+import corpkit
+from corpkit import (
+    interrogator, plotter, table, quickview, 
+    tally, surgeon, merger, conc, keywords, 
+    collocates, quicktree, searchtree
+                    )
 # <markdowncell>
 # We also need to set the path to our corpus as a variable. If you were using this interface for your own corpora, you would change this to the path to your data.
 
@@ -89,7 +456,7 @@ melbtree = (r'(ROOT (S (NP (NNP Melbourne)) (VP (VBZ has) (VP (VBN been) (VP (VB
 # Notice that an OCR error caused a parsing error. Oh well. Here's a visual representation, drawn with NLTK:
 
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/melbtree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/melbtree.png" />
 # <br>
 # <markdowncell>
 # The data is annotated at word, phrase and clause level. Embedded here is an elaboration of the meanings of tags *(ask Daniel if you need some clarification!)*:
@@ -139,7 +506,7 @@ query = r'NP !<< /Melb.?/'
 searchtree(melbtree, query)
 
 # <markdowncell>
-# The dollar specifies a sibling relationship between two parts of the tree---that is, two words or tags that are horizontally aligned.
+# The dollar specifies a sibling relationship between two parts of the tree--wordshat is, two words or tags that are horizontally aligned.
 
 # <codecell>
 # NP with a sister VP
@@ -180,7 +547,7 @@ searchtree(melbtree, query)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/colombotree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/colombotree.png" />
 # <br>
 
 # <codecell>
@@ -194,7 +561,7 @@ colombotree = r'(ROOT (S (NP (PRP We)) (VP (VBP continue) (S (VP (TO to) (VP (VB
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/wooltree.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/wooltree.png" />
 # <br>
 
 # <codecell>
@@ -237,15 +604,15 @@ allwords_query = r'/[A-Za-z0-9]/ !< __'
 # 1. **path to corpus** (the *path* variable)
 #
 # 2. Tregex **options**:
-#   * **'-t'**: return only words
-#   * **'-C'**: return a count of matches
+#   * **'t'**: return only words
+#   * **'c'**: return a count of matches
 #
 # 3. the **Tregex query**
 
-# We only need to count tokens, so we can use the **-C** option (it's often faster than getting lists of matching tokens). The cell below will run *interrogator()* over each annual subcorpus and count the number of matches for the query.
+# We only need to count tokens, so we can use the **count** option (it's often faster than getting lists of matching tokens). The cell below will run *interrogator()* over each annual subcorpus and count the number of matches for the query.
 
 # <codecell>
-allwords = interrogator(path, '-C', allwords_query) 
+allwords = interrogator(path, 'count', allwords_query) 
 
 # <markdowncell>
 # When the interrogation has finished, we can view the total counts by getting the *totals* branch of the *allwords* interrogation:
@@ -264,22 +631,22 @@ print allwords.query
 # Plotting results
 
 # <markdowncell>
-# Lists of years and totals are pretty dry. Luckily, we can use the *plotter()* function to visualise our results. At minimum, *plotter()* needs two arguments:
+# Lists of years and totals are pretty dry. Luckily, we can use the *plot()* function to visualise our results. At minimum, *plot()* needs two arguments:
 
 # 1. a title (in quotation marks)
 # 2. a list of results to plot
 
 # <codecell>
-plotter('Word counts in each subcorpus', allwords.totals)
+plot('Word counts in each subcorpus', allwords.totals)
 
 # <markdowncell>
 # Great! So, we can see that the number of words per year varies quite a lot. That's worth keeping in mind.
 
-# Next, let's plot something more specific, using the **-t** option.
+# Next, let's plot something more specific, using the **words** option.
 
 # <codecell>
 query = r'/(?i)\baustral.?/' # australia, australian, australians, etc.
-aust = interrogator(path, '-t', query) # -t option to get matching words, not just count
+aust = interrogator(path, 'words', query) # words option to get matching words, not just count
 
 # <markdowncell>
 # We now have a list of words matching the query stores in the *aust* variable's *results* branch:
@@ -295,26 +662,26 @@ aust.results[:3] # just the first few entries
 
 # <codecell>
 # as a percentage of all aust* words:
-plotter('Austral*', aust.results, fract_of = aust.totals)
+plot('Austral*', aust.results, fract_of = aust.totals)
 # as a percentage of all words (using our previous interrogation)
-plotter('Austral*', aust.results, fract_of = allwords.totals)
+plot('Austral*', aust.results, fract_of = allwords.totals)
 
 # <markdowncell>
-# Great! So, we now have a basic understanding of the *interrogator()* and *plotter()* functions.
+# Great! So, we now have a basic understanding of the *interrogator()* and *plot()* functions.
 
 # <headingcell level=3>
 # Customising visualisations
 
 # <markdowncell>
-# By default, *plotter()* plots the absolute frequency of the seven most frequent results.
+# By default, *plot()* plots the absolute frequency of the seven most frequent results.
 
-#  We can use other *plotter()* arguments to customise what our chart shows. *plotter()*'s possible arguments are:
+#  We can use other *plot()* arguments to customise what our chart shows. *plot()*'s possible arguments are:
 
-#  | plotter() argument | Mandatory/default?       |  Use          | Type  |
+#  | plot() argument | Mandatory/default?       |  Use          | Type  |
 #  | :------|:------- |:-------------|:-----|
 #  | *title* | **mandatory**      | A title for your plot | string |
 #  | *results* | **mandatory**      | the results you want to plot | *interrogator()* total |
-#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator(-C) form) |
+#  | *fract_of* | None      | results for plotting relative frequencies/ratios etc. | list (interrogator(count) form) |
 #  | *num_to_plot* | 7     | number of top results to display     |   integer |
 #  | *multiplier* | 100     | result * multiplier / total: use 1 for ratios | integer |
 #  | *x_label* | False    | custom label for the x-axis     |  string |
@@ -327,11 +694,11 @@ plotter('Austral*', aust.results, fract_of = allwords.totals)
 
 # <codecell>
 # maybe we want to get rid of all those non-words?
-plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y_label = 'Percentage of all words')
+plot('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y_label = 'Percentage of all words')
 
 # <codecell>
 # or see only the 1960s?
-plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, yearspan = [1960,1969])
+plot('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, yearspan = [1960,1969])
 
 # <markdowncell>
 # **Your Turn**: mess with these variables, and see what you can plot. Try using some really infrequent results, if you like!
@@ -346,7 +713,7 @@ plotter('Austral*', aust.results, fract_of = allwords.totals, num_to_plot = 3, y
 # Viewing and editing results
 
 # <markdowncell>
-# Aside from *interrogator()* and *plotter()*, there are also a few simple functions for viewing and editing results.
+# Aside from *interrogator()* and *plot()*, there are also a few simple functions for viewing and editing results.
 
 # <headingcell level=4>
 # quickview()
@@ -401,7 +768,7 @@ tally(aust.results[:10], 'all')
 
 # <codecell>
 non_words_removed = surgeon(aust.results, [5, 9], remove = True)
-plotter('Some non-words removed', non_words_removed, fract_of = allwords.totals)
+plot('Some non-words removed', non_words_removed, fract_of = allwords.totals)
 
 # <markdowncell>
 # Note that you do not access surgeon lists with *aust.non_words_removed* syntax, but simply with *non_words_removed*.
@@ -423,10 +790,10 @@ plotter('Some non-words removed', non_words_removed, fract_of = allwords.totals)
 
 # <codecell>
 # before:
-plotter('Before merging Australian and Australians', aust.results, num_to_plot = 3)
+plot('Before merging Australian and Australians', aust.results, num_to_plot = 3)
 # after:
 merged = merger(aust.results, [1, 2],  newname = 'australian(s)')
-plotter('After merging Australian and Australians', merged, num_to_plot = 2)
+plot('After merging Australian and Australians', merged, num_to_plot = 2)
 
 # <headingcell level=4>
 # conc()
@@ -450,7 +817,7 @@ randoms = conc(os.path.join(path,'1963'), r'/(?i)\baustral.?/', random = 5)
 randoms
 
 # <markdowncell>
-# *conc()* takes another argument, window, which alters the amount of co-text appearing either side of the match.
+# *conc()* takes another argument, window, which alters the amount of cowordsext appearing either side of the match.
 
 # <codecell>
 conc(os.path.join(path,'1981'), r'/(?i)\baustral.?/', random = 5, window = 50)
@@ -497,7 +864,7 @@ conc(os.path.join(path,'1954'), r'/(?i)\baustral.?/', random = 5, window = 30, t
 
 # * Mood types (*declarative, interrogative, imperative*)
 # * Modality (*would, can, might*)
-# * Lexical density---the number of words per clause, the number of content to non-content words, etc.
+# * Lexical density--wordshe number of words per clause, the number of content to non-content words, etc.
 
 # Lexical density is usually a good indicator of the general tone of texts. The language of academia, for example, often has a huge number of nouns to verbs. We can approximate an academic tone simply by making nominally dense clauses: 
 
@@ -537,11 +904,11 @@ conc(os.path.join(path,'1954'), r'/(?i)\baustral.?/', random = 5, window = 30, t
 # number of content words per clause
 openwords = r'/\b(JJ|NN|VB|RB)+.?\b/'
 clauses = r'S < __'
-opencount = interrogator(path, '-C', openwords)
-clausecount = interrogator(path, '-C', clauses)
+opencount = interrogator(path, 'count', openwords)
+clausecount = interrogator(path, 'count', clauses)
 
 # <codecell>
-plotter('Lexical density', opencount.totals, 
+plot('Lexical density', opencount.totals, 
         fract_of = clausecount.totals, y_label = 'Lexical Density Score', multiplier = 1)
 
 # <markdowncell>
@@ -555,43 +922,43 @@ plotter('Lexical density', opencount.totals,
 
 # <codecell>
 query = r'MD < __'
-modals = interrogator(path, '-t', query)
-plotter('Modals', modals.results, fract_of = modals.totals)
+modals = interrogator(path, 'words', query)
+plot('Modals', modals.results, fract_of = modals.totals)
 
 # <codecell>
 # percentage of tokens that are I/me
 query = r'/PRP.?/ < /(?i)^(i|me|my)$/'
-firstperson = interrogator(path, '-C', query)
+firstperson = interrogator(path, 'count', query)
 
 # <codecell>
-plotter('First person', firstperson.totals, fract_of = allwords.totals)
+plot('First person', firstperson.totals, fract_of = allwords.totals)
 
 # <codecell>
 # percentage of questions
 query = r'ROOT <<- /.?\?.?/'
-questions = interrogator(path, '-C', query)
+questions = interrogator(path, 'count', query)
 
 # <codecell>
-plotter('Questions/all clauses', questions.totals, fract_of = clausecount.totals)
+plot('Questions/all clauses', questions.totals, fract_of = clausecount.totals)
 
 # <codecell>
 # ratio of open/closed class words
 closedwords = r'/\b(DT|IN|CC|EX|W|MD|TO|PRP)+.?\b/'
-closedcount = interrogator(path, '-C', closedwords)
+closedcount = interrogator(path, 'count', closedwords)
 
 # <codecell>
-plotter('Open/closed word classes', opencount.totals, 
+plot('Open/closed word classes', opencount.totals, 
         fract_of = closedcount.totals, y_label = 'Open/closed ratio', multiplier = 1)
 
 # <codecell>
 # ratio of nouns/verbs
 nouns = r'/NN.?/ < __'
 verbs = r'/VB.?/ < __'
-nouncount = interrogator(path, '-C', nouns)
-verbcount = interrogator(path, '-C', verbs)
+nouncount = interrogator(path, 'count', nouns)
+verbcount = interrogator(path, 'count', verbs)
 
 # <codecell>
-plotter('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multiplier = 1)
+plot('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multiplier = 1)
 
 # <headingcell level=4>
 # Experiential features of Fraser's speech
@@ -602,10 +969,10 @@ plotter('Noun/verb ratio', nouncount.totals, fract_of = verbcount.totals, multip
 # <codecell>
 # heads of participants (heads of NPS not in prepositional phrases)
 query = r'/NN.?/ >># (NP !> PP)'
-participants = interrogator(path, '-t', query, lemmatise = True)
+participants = interrogator(path, 'words', query, lemmatise = True)
 
 # <codecell>
-plotter('Participants', participants.results, fract_of = allwords.totals)
+plot('Participants', participants.results, fract_of = allwords.totals)
 
 # <markdowncell>
 # Next, we can get the most common processes. That is, the rightmost verb in a verbal group (take a look at the visualised tree!)
@@ -615,10 +982,10 @@ plotter('Participants', participants.results, fract_of = allwords.totals)
 # <codecell>
 # most common processes
 query = r'/VB.?/ >># VP >+(VP) VP'
-processes = interrogator(path, '-t', query, lemmatise = True)
+processes = interrogator(path, 'words', query, lemmatise = True)
 
 # <codecell>
-plotter('Processes', processes.results[2:], fract_of = processes.totals)
+plot('Processes', processes.results[2:], fract_of = processes.totals)
 
 # <markdowncell>
 # It seems that the verb *believe* is a common process in 1973. Try to run *conc()* in the cell below to look at the way the word behaves.
@@ -643,10 +1010,10 @@ pn_query = r'NP <# NNP'
 
 # <codecell>
 # Proper noun groups
-propernouns = interrogator(path, '-t', pn_query, titlefilter = True)
+propernouns = interrogator(path, 'words', pn_query, titlefilter = True)
 
 # <codecell>
-plotter('Proper noun groups', propernouns.results, fract_of = propernouns.totals, num_to_plot = 15)
+plot('Proper noun groups', propernouns.results, fract_of = propernouns.totals, num_to_plot = 15)
 
 # <markdowncell>
 # Proper nouns are a really good category to investigate further, as it is through proper nouns that we can track discussion of particular people, places or things. So, let's look at the top 100 results:
@@ -662,7 +1029,7 @@ merged = merger(propernouns.results, [9, 13, 27, 36, 78, 93], newname = 'places 
 quickview(merged, n = 100)
 
 ausparts = surgeon(merged, [7, 9, 23, 25, 33, 41, 49], remove = False)
-plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
+plot('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <markdowncell>
 # Neat, eh? Well, that concludes the structured part of the lesson. You now have a bit of time to explore the corpus, using the tools provided. Below, for your convenience, is a table of the functions and their arguments.
@@ -671,7 +1038,7 @@ plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <markdowncell>
 # <br>
-# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/resources/images/options.png" />
+# <img style="float:left" src="https://raw.githubusercontent.com/resbaz/nltk/master/resources/images/options.png" />
 # <br>
 
 # <codecell>
@@ -703,12 +1070,6 @@ plotter('Places in Australia', ausparts, fract_of = propernouns.totals)
 
 # <codecell>
 #
-
-# <markdowncell>
-# By the way, here's the code behind some of the functions we've been using. With all your training, you can probably understand quite a bit of it!
-
-# <codecell>
-%load corpling_tools/additional_tools.ipy
 
 # <markdowncell>
 # That's it for this lesson, and for our interrogation of the Fraser Corpus. Remember that this is the first time anybody has conducted a sustained corpus linguistic investigation of this corpus. Everything we found here is a new discovery about the way language changes over time! (feel free to write it up and publish it!)
