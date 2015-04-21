@@ -506,32 +506,5 @@ concordancer(raw, 'australia')
 # <a id="ref:widdowson"></a>
 # Widdowson, H. G. (2000). On the limitations of linguistics applied. Applied Linguistics, 21(1), 3. Available at [http://applij.oxfordjournals.org/content/21/1/3.short](http://applij.oxfordjournals.org/content/21/1/3.short).
 
-# <headingcell level=3>
-# Workspace
-
 # <markdowncell>
-# Here are a few blank cells, in case you need them for anything:
-
-# <codecell>
 # 
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-# 
-
