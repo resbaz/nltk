@@ -8,6 +8,8 @@ Sometimes, things required on NLTK aren't found on students' notebooks.
 
 Depending on how much time you have, you may want to download *all* NLTK data, or just the relevant parts.
 
+**Note**: nltk.download() starts a small, short interactive session.  iPython does not allow for this.  To use in iPython use the formats like: `nltk.download('all')` as listed below. If you run nltk.download() in Python in the shell, you will get the interactive session.
+
 To download all NLTK data, run `nltk.download('all')`
 
 Other parts of NLTK that are used in the course can be downloaded as follows:
@@ -18,8 +20,6 @@ nltk.download('wordnet') # lemmatisation
 nltk.download('stopwords') # lists of stopwords
 nltk.download('brown') # the Brown corpus
 ```
-
-**Note**: it is **not possible** to run `nltk.download()` **without an argument** via the IPython Notebook, as this starts an interactive session. If you need it, you can run it from the Shell Terminal.
 
 ## Problem: Functions behaving badly
 
