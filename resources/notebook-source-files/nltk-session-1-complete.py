@@ -670,3 +670,6 @@ len(set(word.lower() for word in text1 if word.isalpha()))
 # We'll practice all these commands in the following lessons ... so don't panic!
 
 # It's a lot to take in and it will probably take a while before you feel really comfortable.
+
+# <markdowncell>
+# 

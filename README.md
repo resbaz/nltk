@@ -70,9 +70,18 @@ We'll leave some time at the end of this session for exploring the Fraser Corpus
 
 So, we've learned some great skills! But, we need to know how to put these skills into practice within our own work. In this final session, we discuss:
 
-
 * What kind(s) of data we're all working with
 * Storing your data and results
 * Using what you've learned here
 * Developing your skills further
 * Summarising and saying goodbye
+
+## Adding to this repository
+
+You're more than welcome to submit a pull request with changes to our course materials.
+
+The `.ipynb` files used by both students and instructors are generated using plain `.py` files with IPython's `nbconvert` utility. Accordingly, the best way to modify our course materials is to update the `.py` file, rather than the `.ipynb` file. These live in `resources/notebook-source-files`.
+
+
+
+Longer functions may be archived in `resources/scripts.py`, so that they may be imported by instructors/helpers on students' notebooks if need be.
