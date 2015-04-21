@@ -76,9 +76,9 @@ So, we've learned some great skills! But, we need to know how to put these skill
 * Developing your skills further
 * Summarising and saying goodbye
 
-# Adding to this repository
+## Adding to this repository
 
-You're more than welcome to submit a pull request with changes
+You're more than welcome to submit a pull request with changes to our course materials.
 
 The `.ipynb` files used by both students and instructors are generated using plain `.py` files with IPython's `nbconvert` utility. Accordingly, the best way to modify our course materials is to update the `.py` file, rather than the `.ipynb` file. These live in `resources/notebook-source-files`.
 
