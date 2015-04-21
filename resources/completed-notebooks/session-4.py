@@ -21,36 +21,42 @@
 
 # Or, ask us if Python can do a certain thing. Maybe we have some tips!
 
-# <headingcell level=2>
-# Addressing your questions
+# <codecell>
+import nltk
+from IPython.display import (display, clear_output, Image, display_pretty, 
+	             display_html, display_jpeg, display_png, display_svg, HTML)
+%matplotlib inline
 
-# <headingcell level=3>
+# <headingcell level=2>
 # Mining the web
 
 # <markdowncell>
 # Let's have a look at [Project Gutenberg](https://www.gutenberg.org/wiki/Technology_%28Bookshelf%29). Let's check out *Food processing*.
+
+# Using the skills we've learned, it should be possible to extract texts from Project Gutenberg.
 
 # <codecell>
 booknums = ['24510', '19073', '21592']
 
 # <codecell>
 def gutenberger(list_of_nums):
-    text = []
     from urllib import urlopen
+    text = []
     for num in list_of_nums:
         num = str(num)
         url = 'https://www.gutenberg.org/cache/epub/' + num + '/pg' + num + '.txt'
         raw = urlopen(url).read()
         raw = unicode(raw, 'utf-8')
-        title = [line for line in raw.splitlines() if line.startswith('Title:')]
-        if title:
-            title = title[0]
-            print title
+        # title = 'No title'
+        title = next(line for line in raw.splitlines() if line.startswith('Title:'))
+        print title
+        title = title.replace('Title: ', '')
         text.append([title, raw])
     return text
 
 # <codecell>
 # call our function!
+books = gutenberger(booknums)
 
 # <markdowncell>
 # The thing to remember here is that the web is well-structured. URLs are just strings, and you can hack them very easily.
@@ -61,12 +67,138 @@ def gutenberger(list_of_nums):
 # <markdowncell>
 # The key here is to get your work into **clean, plain text**
 
+# <markdowncell>
+# So, let's save the Gutenberg data to disk:
+
 # <codecell>
-#,,,
+def saver(book_data):
+    import os
+    # a path to our soon-to-be corpus
+    newpath = 'corpora/gutenberg'
+    os.makedirs(newpath)
+    for title, text in book_data:
+    	title = title.replace(' ', '-')
+    	filename = ''.join([c for c in title if c.isalnum() or c == '-']) + '.txt'
+        fo = open(os.path.join(newpath, filename),"w")
+        fo.write(text.encode("UTF-8"))
+        fo.close()
+        print 'File created: ' + filename
+
+# <codecell>
+saver(books)
 
 # <headingcell level=3>
-# Question 3
+# Challenge
 
+# <markdowncell>
+# **Combine the two functions into `book_saver()`.
+
+# <headingcell level=2>
+# Adding information to our text
+
+# <codecell>
+from nltk.corpus import brown
+print brown.words() 
+print brown.tagged_words()
+
+# <markdowncell>
+# Some other things are annotated in the Brown Corpus, too. Head here for more info:
+
+# <codecell>
+HTML('<iframe src=http://en.wikipedia.org/wiki/Brown_Corpus#Part-of-speech_tags_used width=700 height=350></iframe>')
+
+# <markdowncell>
+# So, we can pretty easily make lists containing all words of a given type. Below, we'll print the first 50 adverbs. Try changing the 'RB' to another kind of tag (in the list above), and see what results turn up. 
+
+# > JJ and RB are shorthand for adjective and adverb. It's linguistics jargon from the 50s that we're stuck with now.
+
+# <codecell>
+from nltk.corpus import brown
+adverbs = []
+for word, tag in brown.tagged_words():
+    # get any word whose tag is adverb
+    if tag == 'RB':
+        adverbs.append(word)
+adverbs[:50]
+
+# <markdowncell>
+# It's easy to grasp the potential power of annotation: think how difficult it would be to write regular expressions that locate all adverbs!
+
+# > **Note:** John Sinclair, an early proponent of corpus linguistics generally, was famously resistant to the use of annotation and parsing. He felt that the corpus alone should be used to build theory, rather than using existing theories (grammars) to annotate data (e.g. [2004](#ref:sinclair)). Though this is an uncommon viewpoint today, it is still useful to remember that the process of 'value-adding' is never free of theory or interpretation.
+
+# <headingcell level=2>
+# Part-of-speech tagging
+
+# <markdowncell>
+# Part-of-speech (POS) tagging is the process of assigning each token a label. Often, these labels are similar to what was used to tag the Brown Corpus.
+
+# > **Note:** It is generally considered good practice to train your tagger by exposing it to well-annotated language of a similar variety. For reasons of scope, however, training taggers and parsers is not covered in these sessions.
+
+# <codecell>
+books[1][1][9793:9968]
+
+# <codecell>
+sent = books[1][1][9793:9968]
+text = nltk.word_tokenize(sent)
+tagged = nltk.pos_tag(text)
+tagged
+
+# <markdowncell>
+# We could use this to search text by part of speech:
+
+# <codecell>
+for word, tag in tagged:
+    if tag == 'NN':
+        print word
+
+# <markdowncell>
+# And even do really complicated stuff if we want:
+
+# <codecell>
+for index, tup in enumerate(tagged):
+    if tup[1] == 'DT':
+        print tagged[index + 1][0] 
+
+# <headingcell level=3>
+# Challenge!
+
+# <markdowncell>
+# **Use three nested conditional statements to find a single word. Be creative!**
+
+# <headingcell level=2>
+# Getting your data into Python/NLTK
+
+# <headingcell level=3>
+# Scenario 1: You have some old books.
+
+# <markdowncell>
+# * Are they machine readable?
+# * OCR options---institutional or DIY?
+# * Structure them in a meaningful way---by author, by year, by language ... 
+# * Start querying!
+
+# <headingcell level=3>
+# Scenario 2: You're interested in an online community.
+
+# <markdowncell>
+# * Explore the site. Sign up for it, maybe.
+# * Download it: *Wget*, *curl*, *crawlers, spiders* ...
+# * Extract relevant data and metadata: Python's *Beautiful Soup* library.
+# * **Structure your data!**
+# * Annotate your data, save these annotations
+# * Start querying!
+
+# <headingcell level=3>
+# Scenario 3: Something of interest breaks in the news
+
+# <markdowncell>
+# * It will start being discussed all over the web.
+# * You can use the Twitter API to harvest tweets containing a term or hashtag of interest.
+# * You can get a list of RSS feeds and mine news articles
+# * You can use something like *WebBootCat* to harvest search engine results and make a plain text corpus
+# * Process these into a manageable form
+# * Structure them
+# * *Start querying!
 
 # <headingcell level=2>
 # Managing resources and results
@@ -134,38 +266,6 @@ import this
 
 # <markdowncell>
 # What other things might we use NLTK for? A few examples, and possible workflows.
-
-# <headingcell level=3>
-# Scenario 1: You have some old books.
-
-# <markdowncell>
-# * Are they machine readable?
-# * OCR options---institutional or DIY?
-# * Structure them in a meaningful way---by author, by year, by language ... 
-# * Start querying!
-
-# <headingcell level=3>
-# Scenario 2: You're interested in an online community.
-
-# <markdowncell>
-# * Explore the site. Sign up for it, maybe.
-# * Download it: *Wget*, *curl*, *crawlers, spiders* ...
-# * Extract relevant data and metadata: Python's *Beautiful Soup* library.
-# * **Structure your data!**
-# * Annotate your data, save these annotations
-# * Start querying!
-
-# <headingcell level=3>
-# Scenario 3: Something of interest breaks in the news
-
-# <markdowncell>
-# * It will start being discussed all over the web.
-# * You can use the Twitter API to harvest tweets containing a term or hashtag of interest.
-# * You can get a list of RSS feeds and mine news articles
-# * You can use something like *WebBootCat* to harvest search engine results and make a plain text corpus
-# * Process these into a manageable form
-# * Structure them
-# * *Start querying!
 
 # <headingcell level=2>
 # Integrating IPython into your workflow
