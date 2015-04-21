@@ -10,7 +10,7 @@
 # <markdowncell>
 # So, now you know Python and NLTK! The main things we still have to do are:
 
-# 1. Address some specific questions
+# 1. Run through a workflow that addresses some of your specific questions
 # 2. Manage resources and results
 # 3. Brainstorm some other uses for NLTK
 # 4. Integrate IPython into your existing workflow
@@ -20,7 +20,7 @@
 # <codecell>
 import nltk
 from IPython.display import (display, clear_output, Image, display_pretty, 
-	             display_html, display_jpeg, display_png, display_svg, HTML)
+                 display_html, display_jpeg, display_png, display_svg, HTML)
 %matplotlib inline
 
 # <headingcell level=2>
@@ -110,7 +110,11 @@ from IPython.display import (display, clear_output, Image, display_pretty,
 #,,,
 
 # <headingcell level=3>
-# Tags used in the Brown Corpus
+# [Tags used in the Brown Corpus](http://en.wikipedia.org/wiki/Brown_Corpus#Part-of-speech_tags_used)
+
+# <markdowncell>
+# 
+# 
 
 # <codecell>
 HTML('<iframe src=http://en.wikipedia.org/wiki/Brown_Corpus#Part-of-speech_tags_used width=700 height=350></iframe>')
@@ -123,8 +127,8 @@ HTML('<iframe src=http://en.wikipedia.org/wiki/Brown_Corpus#Part-of-speech_tags_
 
 # <markdowncell>
 # * Are they machine readable?
-# * OCR options---institutional or DIY?
-# * Structure them in a meaningful way---by author, by year, by language ... 
+# * OCR options&mdash;institutional or DIY?
+# * Structure them in a meaningful way&mdash;by author, by year, by language ... 
 # * Start querying!
 
 # <headingcell level=3>
@@ -214,7 +218,7 @@ import this
 # <markdowncell>
 # [*Figshare*](http://www.figshare.com) is a site for storing tables and figures. It's particularly useful for working with large datasets, as we often generate far more raw tables and statistics than we can possibly publish.
 
-# It's becoming more and more common to link journal publications to additional online resources such as GitHub code or Figshares. It's also more and more common to cite GitHub and Figshare---always nice to bump up your citation count!
+# It's becoming more and more common to link journal publications to additional online resources such as GitHub code or Figshares. It's also more and more common to cite GitHub and Figshare&mdash;always nice to bump up your citation count!
 
 # <headingcell level=2>
 # Integrating IPython into your workflow

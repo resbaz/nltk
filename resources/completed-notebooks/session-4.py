@@ -24,7 +24,7 @@
 # <codecell>
 import nltk
 from IPython.display import (display, clear_output, Image, display_pretty, 
-	             display_html, display_jpeg, display_png, display_svg, HTML)
+                 display_html, display_jpeg, display_png, display_svg, HTML)
 %matplotlib inline
 
 # <headingcell level=2>
@@ -77,8 +77,8 @@ def saver(book_data):
     newpath = 'corpora/gutenberg'
     os.makedirs(newpath)
     for title, text in book_data:
-    	title = title.replace(' ', '-')
-    	filename = ''.join([c for c in title if c.isalnum() or c == '-']) + '.txt'
+        title = title.replace(' ', '-')
+        filename = ''.join([c for c in title if c.isalnum() or c == '-']) + '.txt'
         fo = open(os.path.join(newpath, filename),"w")
         fo.write(text.encode("UTF-8"))
         fo.close()
