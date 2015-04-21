@@ -91,7 +91,7 @@ saver(books)
 # Challenge
 
 # <markdowncell>
-# **Combine the two functions into `book_saver()`.
+# **Combine the two functions into `book_saver()`**.
 
 # <headingcell level=2>
 # Adding information to our text
@@ -141,7 +141,7 @@ books[1][1][9793:9968]
 sent = books[1][1][9793:9968]
 text = nltk.word_tokenize(sent)
 tagged = nltk.pos_tag(text)
-tagged
+print tagged
 
 # <markdowncell>
 # We could use this to search text by part of speech:
@@ -173,8 +173,8 @@ for index, tup in enumerate(tagged):
 
 # <markdowncell>
 # * Are they machine readable?
-# * OCR options---institutional or DIY?
-# * Structure them in a meaningful way---by author, by year, by language ... 
+# * OCR options&mdash;institutional or DIY?
+# * Structure them in a meaningful way&mdash;by author, by year, by language ... 
 # * Start querying!
 
 # <headingcell level=3>
@@ -183,7 +183,7 @@ for index, tup in enumerate(tagged):
 # <markdowncell>
 # * Explore the site. Sign up for it, maybe.
 # * Download it: *Wget*, *curl*, *crawlers, spiders* ...
-# * Extract relevant data and metadata: Python's *Beautiful Soup* library.
+# * Extract relevant data and metadata: Python's [*Beautiful Soup*](http://www.crummy.com/software/BeautifulSoup/bs4/doc/) library.
 # * **Structure your data!**
 # * Annotate your data, save these annotations
 # * Start querying!
@@ -198,7 +198,7 @@ for index, tup in enumerate(tagged):
 # * You can use something like *WebBootCat* to harvest search engine results and make a plain text corpus
 # * Process these into a manageable form
 # * Structure them
-# * *Start querying!
+# * Start querying!
 
 # <headingcell level=2>
 # Managing resources and results
@@ -259,7 +259,7 @@ import this
 # <markdowncell>
 # [*Figshare*](http://www.figshare.com) is a site for storing tables and figures. It's particularly useful for working with large datasets, as we often generate far more raw tables and statistics than we can possibly publish.
 
-# It's becoming more and more common to link journal publications to additional online resources such as GitHub code or Figshares. It's also more and more common to cite GitHub and Figshare---always nice to bump up your citation count!
+# It's becoming more and more common to link journal publications to additional online resources such as GitHub code or Figshares. It's also more and more common to cite GitHub and Figshare&mdash;always nice to bump up your citation count!
 
 # <headingcell level=2>
 # Other uses of NLTK
@@ -360,32 +360,3 @@ Image(url='http://starecat.com/content/wp-content/uploads/two-states-of-every-pr
 # <a id="ref:sinclair"></a>
 # Sinclair, J. (2004). Trust the text: Language, corpus and discourse. Routledge. Available at
 # [http://books.google.com.au/books/about/Trust_the_Text.html?id=n6xU2lyVoeQC&redir_esc=y](http://books.google.com.au/books/about/Trust_the_Text.html?id=n6xU2lyVoeQC&redir_esc=y).
-
-# <headingcell level=3>
-# Workspace
-
-# <markdowncell>
-# Here are a few blank cells, in case you need them for anything:
-
-# <codecell>
-# 
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-#
-# <codecell>
-# 
