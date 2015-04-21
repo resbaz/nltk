@@ -16,6 +16,7 @@ Other parts of NLTK that are used in the course can be downloaded as follows:
 nltk.download('punkt') # word tokeniser
 nltk.download('wordnet') # lemmatisation
 nltk.download('stopwords') # lists of stopwords
+nltk.download('brown') # the Brown corpus
 ```
 
 **Note**: it is **not possible** to run `nltk.download()` **without an argument** via the IPython Notebook, as this starts an interactive session. If you need it, you can run it from the Shell Terminal.
