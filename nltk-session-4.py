@@ -11,8 +11,8 @@
 # So, now you know Python and NLTK! The main things we still have to do are:
 
 # 1. Run through a workflow that addresses some of your specific questions
-# 2. Manage resources and results
-# 3. Brainstorm some other uses for NLTK
+# 2. Brainstorm some use-cases for NLTK
+# 3. Manage resources and results
 # 4. Integrate IPython into your existing workflow
 # 5. Have an open discussion about what we've done
 # 6. Summarise and say goodbye!
@@ -55,7 +55,6 @@ from IPython.display import (display, clear_output, Image, display_pretty,
 
 # <codecell>
 #,,,
-
 
 # <codecell>
 #,,,
