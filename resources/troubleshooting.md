@@ -10,7 +10,7 @@ Depending on how much time you have, you may want to download *all* NLTK data, o
 
 **Note**: nltk.download() starts a small, short interactive session.  iPython does not allow for this.  To use in iPython use the formats like: `nltk.download('all')` as listed below. If you run nltk.download() in Python in the shell, you will get the interactive session.
 
-To download all NLTK data, run `nltk.download('all')`
+To download all NLTK data, run `nltk.download('all')`, this can take up to 15 minutes.
 
 Other parts of NLTK that are used in the course can be downloaded as follows:
 
