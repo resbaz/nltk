@@ -203,6 +203,19 @@ letter       & \cellcolor{gray!25}whit       & \cellcolor{gray!25}minister     &
 
 
 \begin{frame}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/modal-use.png}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{title}
+    \centering
+    %\includegraphics[width=0.75\textwidth]{screenshots/filename}
+\end{frame}
+
+
+\begin{frame}
 	\frametitle{\emph{Australia}, 1954}
 \begin{table}
 \tiny
@@ -284,3 +297,21 @@ letter       & \cellcolor{gray!25}whit       & \cellcolor{gray!25}minister     &
 	\end{frame}
 	
 	\end{document}
+
+
+processes = interrogator(c, 'words', r'/VB.?/ >># (VP >+(VP) (VP $ NP))', lemmatise = True)
+plotter('Predicators', processes.results[1:], fract_of = processes.totals)
+allwords = interrogator(c, 'count', 'any_word')
+query = [[u'Relational', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.relational], [u'Verbal', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.verbal], [u'Mental', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.mental], [u'Material', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) !< /%s/' % processes.relational !< /%s/' % processes.mental !< /%s/' % processes.verbal]]
+query = [[u'Relational', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.relational], [u'Verbal', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.verbal], [u'Mental', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) < /%s/' % processes.mental], [u'Material', r'/VB.?/ >># (VP >+(VP) (VP $ NP)) !< /%s/ !< /%s/ !< /%s/' % (processes.verbal, processes.mental, processes.relational)]]
+from corpkit import multiquery
+three_proc = multiquery(c, query)
+plotter('Process types', three_proc.results, fract_of = three_proc.totals, num_to_plot = 4)
+material = interrogator(c, 'words', query[2][1], lemmatise = True)
+
+
+
+plotter('Modal use', lem_modals.results, fract_of = lem_modals.totals, save = True, y_label = 'Percentage of all modals')
+
+
+nouns = interrogator(c, 'words', r'NP <# /(NN|PRP).?/', titlefilter = True, lemmatise = True)
