@@ -2,3 +2,11 @@
 *.pyc
 resources/completed-notebooks/.ipynb_checkpoints/
 .ipynb_checkpoints/
+resources/analysing-fraser.aux
+resources/analysing-fraser.fdb_latexmk
+resources/analysing-fraser.log
+resources/analysing-fraser.nav
+resources/analysing-fraser.out
+resources/analysing-fraser.snm
+resources/analysing-fraser.synctex.gz
+resources/analysing-fraser.toc

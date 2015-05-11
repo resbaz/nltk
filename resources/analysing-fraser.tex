@@ -1,0 +1,286 @@
+\documentclass{beamer}       % print frames
+%\documentclass[notes=only]{beamer}   % only notes
+%\documentclass{beamer}              % only frames
+\usepackage{colortbl}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+\usepackage{multienum}
+
+\usepackage[notocbib]{apacite}
+	\renewcommand{\APACrefatitle}[2]{#1}
+	\renewcommand{\APACrefbtitle}[2]{#1}
+	\renewcommand{\APACrefbtitle}[2]{\Bem{#1}}
+	\renewcommand{\APACrefaetitle}[2]{[#2]}
+	\renewcommand{\APACrefbetitle}[2]{[#2]} 
+\usepackage{textpos}
+\usepackage{setspace}
+\usefonttheme{serif}
+%\usepackage{graphicx}
+\usetheme{Boadilla}
+
+\usepackage[UKenglish]{babel}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\setcounter{tocdepth}{1} 
+\usecolortheme{orchid}
+\title[University of Melbourne]{Analysing longitudinal change in Malcolm Fraser's \emph{Radio Electorate Talks}}
+\author[Daniel McDonald]{~\\Daniel McDonald~\\~\\~\\\footnotesize}
+
+\date{\today}
+
+\begin{document}
+
+\definecolor{orange}{rgb}{1,0.5,0}
+
+\addtobeamertemplate{frametitle}{}{%
+\begin{textblock*}{100mm}(.775\textwidth,-.5cm)
+%\includegraphics[scale=.235]{screenshots/unimelblong}
+\end{textblock*}}
+
+\frame{\titlepage}
+
+\begin{frame}
+	\frametitle{Context}
+	\begin{itemize}
+	\item We've got more than 700 digitised transcripts of Fraser's radio electorate talks
+	\item There are sophisticated tools and methods for processing natural language
+	\item We can use these tools to learn about very specific or very general things
+	\item Current goal: look for longitudinal change in Fraser's language use
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Fraser, parsed}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/melbtree}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Fraser, parsed}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/melbdep}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The early years...}
+\begin{table}[h!]
+\tiny
+\begin{tabular}{llllll}
+
+\toprule
+\textbf{1954}        & \textbf{1956}         & \textbf{1957}         & \textbf{1958}       & \textbf{1959}          & \textbf{1960}          \\ \midrule
+\cellcolor{red!25}sheep       & olympic      & \cellcolor{orange!25}bank         & tongue     & \cellcolor{red!25}birds         & \cellcolor{blue!25}congo         \\
+women       & \cellcolor{red!25}wool         & diesel       & \cellcolor{orange!25}bonds      & \cellcolor{yellow!25}prescriptions & nations       \\
+happiness   & \cellcolor{yellow!25}nurses       & marys        & blue       & territory     & pies          \\
+foxtrot     & organisation & \cellcolor{orange!25}money        & mother     & \cellcolor{blue!25}communist     & \cellcolor{blue!25}africa        \\
+breed       & problem      & \cellcolor{orange!25}tax          & australian & recognition   & store         \\
+men         & \cellcolor{gray!25}bill         & \cellcolor{red!25}petrol       & true       & \cellcolor{blue!25}china         & \cellcolor{yellow!25}hospitals     \\
+\cellcolor{yellow!25}cure        & \cellcolor{gray!25}house        & power        & \cellcolor{green!25}army       & \cellcolor{green!25}army          & native        \\
+\cellcolor{red!25}wool        & \cellcolor{blue!25}suez         & sovereign    & \cellcolor{yellow!25}radiation  & countries     & \cellcolor{red!25}soil          \\
+prosperity  & athletes     & \cellcolor{red!25}road         & \cellcolor{blue!25}india      & \cellcolor{red!25}woollen       & tapping       \\
+tee         & extradition  & \cellcolor{red!25}salaries     & settlement & \cellcolor{green!25}defence       & super         \\
+shorthorn   & united       & \cellcolor{red!25}fuel         & cortland   & \cellcolor{blue!25}vietnam       & appeal        \\
+man         & \cellcolor{blue!25}hungary      & \cellcolor{gray!25}prime        & macmillan  & \cellcolor{blue!25}holland       & \cellcolor{yellow!25}hospital      \\
+\cellcolor{red!25}beef        & ~            & henty        & arthur     & \cellcolor{blue!25}tibet         & hat           \\
+\cellcolor{gray!25}parliament  & ~            & increased    & \cellcolor{red!25}mountains  & \cellcolor{red!25}bird          & person        \\
+\cellcolor{yellow!25}germ        & ~            & \cellcolor{blue!25}hungarian    & women      & \cellcolor{yellow!25}drugs         & australia     \\
+\cellcolor{yellow!25}experiments & ~            & filling      & countries  & pensioner     & hammersmith   \\
+pyx         & ~            & \cellcolor{gray!25}minister     & \cellcolor{red!25}industry   & eking         & organizations \\
+\cellcolor{red!25}breeds      & ~            & \cellcolor{green!25}army     & equal      & bureau        & week          \\
+\cellcolor{yellow!25}disease     & ~            & united       & \cellcolor{green!25}soldier    & test          & telephone     \\
+remember    & ~            & commonwealth & \cellcolor{red!25}dairying   & \cellcolor{gray!25}ballots       & \cellcolor{blue!25}khrushchev    \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Shifting focus?}
+\begin{table}[h!]
+\tiny
+\begin{tabular}{llllll}
+
+\toprule
+\textbf{1961}            & \textbf{1962}          & \textbf{1963}        & \textbf{1964}       & \textbf{1965}          & \textbf{1966}         \\ \midrule
+licensing       & \cellcolor{blue!25}guinea        & conference  & united     & \cellcolor{gray!25}ballot        & \cellcolor{blue!25}viet          \\
+common          & west          & base        & \cellcolor{red!25}meat       & \cellcolor{orange!25}reserve       & task          \\
+kingdom         & united        & \cellcolor{blue!25}malaysia    & \cellcolor{blue!25}american   & regular       & \cellcolor{blue!25}asia          \\
+\cellcolor{orange!25}market          & quantitative  & labour      & \cellcolor{blue!25}malaysia   & \cellcolor{green!25}army          & security      \\
+\cellcolor{blue!25}africa          & \cellcolor{blue!25}indonesian    & \cellcolor{red!25}wool        & \cellcolor{blue!25}washington & \cellcolor{blue!25}vietnam       & civic         \\
+\cellcolor{blue!25}berlin          & \cellcolor{yellow!25}fibroid       & caldwell    & government & \cellcolor{green!25}puckapunyal   & \cellcolor{blue!25}laos          \\
+\cellcolor{orange!25}sales           & dutch         & nuclear     & \cellcolor{blue!25}indonesia  & waterfront    & \cellcolor{gray!25}policies      \\
+\cellcolor{orange!25}brokers         & \cellcolor{red!25}rabbit        & portland    & threat     & \cellcolor{blue!25}communist     & \cellcolor{blue!25}malaysia      \\
+\cellcolor{yellow!25}goulburn        & \cellcolor{blue!25}indonesia     & bolt        & \cellcolor{red!25}tobacco    & \cellcolor{green!25}servicemen    & \cellcolor{green!25}troops        \\
+\cellcolor{blue!25}germany         & \cellcolor{blue!25}india         & ash         & \cellcolor{blue!25}canadian   & \cellcolor{blue!25}rhodesia      & min           \\
+import          & nations       & buyers      & wentworth  & \cellcolor{red!25}workers       & \cellcolor{green!25}units         \\
+technical       & \cellcolor{yellow!25}virus         & \cellcolor{blue!25}treaty      & virginia   & \cellcolor{green!25}serviceman    & \cellcolor{green!25}\cellcolor{green!25}military      \\
+\cellcolor{green!25}army            & organizations & \cellcolor{blue!25}france      & \cellcolor{blue!25}nauru      & fluctuations  & confrontation \\
+airlines        & aylesbury     & \cellcolor{gray!25}party       & board      & epic          & \cellcolor{blue!25}laotian       \\
+regard          & \cellcolor{green!25}army          & deputation  & \cellcolor{red!25}roads      & scheme        & area          \\
+\cellcolor{orange!25}buyers          & kingdom       & interview   & \cellcolor{blue!25}asia       & commissioners & \cellcolor{green!25}force         \\
+\cellcolor{orange!25}credit          & mouth         & \cellcolor{gray!25}members     & \cellcolor{orange!25}banks      & tribunal      & \cellcolor{blue!25}cong          \\
+standardization & restrictions  & \cellcolor{blue!25}french      & \cellcolor{blue!25}congress   & \cellcolor{green!25}seamen         &  ~            \\
+\cellcolor{blue!25}apartheid       & foot          & association & \cellcolor{orange!25}economic   & \cellcolor{green!25}mobilization  &  ~            \\
+\cellcolor{blue!25}german          & common        & federation  & \cellcolor{blue!25}america    & \cellcolor{green!25}recruits      &  ~             \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Thinking global}
+\begin{table}[h!]
+\tiny
+\begin{tabular}{llllll}
+
+\toprule
+
+\textbf{1967}         & \textbf{1968}         & \textbf{1969}        & \textbf{1970}          & \textbf{1971}           & \textbf{1972}       \\ \midrule
+\cellcolor{green!25}army         & school       & \cellcolor{red!25}wheat       & \cellcolor{green!25}forces        & reconstruction & broadcast   \\
+\cellcolor{blue!25}viet         & high         & shipping    & \cellcolor{green!25}defence       & \cellcolor{red!25}wheat          & education   \\
+\cellcolor{blue!25}vietnam      & \cellcolor{red!25}ore          & \cellcolor{gray!25}labor       & \cellcolor{blue!25}vietnamese    & \cellcolor{red!25}dairy          & acquisition \\
+\cellcolor{green!25}battalion    & science      & \cellcolor{red!25}rams        & \cellcolor{orange!25}savings       & \cellcolor{red!25}bushels        & cent        \\
+headquarters & groton       & reef        & \cellcolor{blue!25}vietnam       & \cellcolor{red!25}rural          & \cellcolor{red!25}elk         \\
+\cellcolor{green!25}soldiers     & tons         & education   & \cellcolor{blue!25}cambodia      & \cellcolor{orange!25}dollars        & \cellcolor{orange!25}corporation \\
+\cellcolor{green!25}regiment     & \cellcolor{red!25}fertiliser   & \cellcolor{red!25}merino      & \cellcolor{blue!25}zealand       & \cellcolor{orange!25}costs          & \cellcolor{red!25}wool        \\
+\cellcolor{green!25}command      & \cellcolor{red!25}wool         & colleges    & \cellcolor{orange!25}grant         & \cellcolor{red!25}kangaroo       & sybil       \\
+\cellcolor{green!25}enemy        & \cellcolor{blue!25}korea        & orderly     & exercise      & \cellcolor{red!25}wool           & sinclair    \\
+\cellcolor{blue!25}vietnamese   & security     & people      & \cellcolor{yellow!25}drought       & scheme         & \cellcolor{red!25}rural       \\
+\cellcolor{blue!25}cong         & organisation & science     & percent       & \cellcolor{orange!25}payment        & lobar       \\
+\cellcolor{green!25}troops       & bauxite      & mcewen      & capability    & deficiency     & united      \\
+\cellcolor{gray!25}government   & sciences     & \cellcolor{gray!25}minister    & moratorium    & \cellcolor{yellow!25}industry       & commission  \\
+royal        & \cellcolor{yellow!25}iron         & schools     & \cellcolor{orange!25}debt          & metric         & marketing   \\
+units        & \cellcolor{yellow!25}mining       & vessels     & demonstrators & \cellcolor{orange!25}price          & community   \\
+fire         & alumina      & quotas      & \cellcolor{red!25}wool          & contest        & \cellcolor{red!25}environment \\
+lists        & girls        & \cellcolor{red!25}bushel      & \cellcolor{green!25}military      & broadcast      & children    \\
+postal       & \cellcolor{gray!25}minister     & region      & \cellcolor{orange!25}aid           & talk           & advanced    \\
+nth          & park         & \cellcolor{gray!25}independent & violence      & \cellcolor{orange!25}payments       & \cellcolor{green!25}army        \\
+\cellcolor{green!25}force        & korean       & \cellcolor{gray!25}opposition  & eligible      & \cellcolor{red!25}road           & week        \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bringing it back home}
+\begin{table}[h!]
+\tiny
+\begin{tabular}{lllll}
+
+\toprule
+\textbf{1973}         & \textbf{1974}       & \textbf{1975}         & \textbf{1981}         & \textbf{1982}        \\ \midrule
+\cellcolor{red!25}rural        & \cellcolor{gray!25}government & \cellcolor{gray!25}government   & \cellcolor{yellow!25}water        & \cellcolor{orange!25}economic    \\
+\cellcolor{gray!25}government   & \cellcolor{orange!25}inflation  & \cellcolor{gray!25}opposition   & \cellcolor{red!25}river        & cain        \\
+\cellcolor{gray!25}senator      & embargo    & insurance    & \cellcolor{orange!25}tax          & \cellcolor{orange!25}tax         \\
+\cellcolor{gray!25}bill         & \cellcolor{orange!25}unemployed & private      & \cellcolor{red!25}murray       & castigation \\
+\cellcolor{gray!25}provision    & united     & \cellcolor{gray!25}electoral    & \cellcolor{gray!25}premiers     & probate     \\
+\cellcolor{gray!25}seats        & \cellcolor{gray!25}minister   & \cellcolor{gray!25}prime        & review       & australia   \\
+\cellcolor{gray!25}election     & \cellcolor{gray!25}prime      & \cellcolor{orange!25}inflation    & \cellcolor{orange!25}borrowing    & \cellcolor{gray!25}labor       \\
+communities  & \cellcolor{gray!25}electoral  & public       & \cellcolor{orange!25}wage         & hayden      \\
+written      & \cellcolor{red!25}wool       & cairns       & salinity     & avoidance   \\
+measure      & collar     & connors      & growth       & crime       \\
+arbitrary    & leyland    & \cellcolor{gray!25}parliament   & resources    & \cellcolor{gray!25}policies    \\
+\cellcolor{red!25}wool      & restraint  & \cellcolor{orange!25}unemployment & functions    & schools     \\
+depreciation & caused     & companies    & \cellcolor{orange!25}economic     & alliance    \\
+power        & \cellcolor{red!25}unions     & sector       & \cellcolor{green!25}peacekeeping & \cellcolor{green!25}anzus        \\
+areas        & people     & \cellcolor{gray!25}parties      & resource     & invincible  \\
+cameron      & \cellcolor{gray!25}lam        & commonwealth & quality      & commission  \\
+\cellcolor{green!25}war          & cairns     & \cellcolor{red!25}wool         & commonwealth & \cellcolor{orange!25}funding     \\
+april        & leavers    & \cellcolor{gray!25}labor        & heritage     & \cellcolor{green!25}force       \\
+letter       & \cellcolor{gray!25}whit       & \cellcolor{gray!25}minister     & \cellcolor{yellow!25}disabled     & crimes      \\
+\cellcolor{red!25}local        & \cellcolor{orange!25}income     & firms        & avoidance    & enrolments  \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\emph{Australia}, 1954}
+\begin{table}
+\tiny
+\begin{tabular}{lrll}
+   0 &        willing to accept them as & australians  & inertia way then our new \\
+   1 &       , that the best things for & australians  & id the stature development of \\
+   2 &       of haven for millions more & australians  & than we have at present \\
+   3 &       borders new communities of & australians  & would \\
+   4 &                                  & australian   & women were granted this right \\
+   5 &     could well crane tee face of & australia    & , i was speaking with an \\
+   6 &   a reigning monarch has visited & australia    & and realisation that this \\
+   7 &                                  & australians  & take their true place in the \\
+   8 &      that conditions in parts of & australia    & resemble the ranges in texas \\
+   9 &        we must combine to insure & australia    & just as each year we insure on \\
+  10 &   we evolve a one party state in & australian   & this clearly implies the \\
+  11 &                                  & australia    & is great only while our mica \\
+  12 &     and sent a further sample to & australia    & that was destroyed \\
+  13 &      prepared to become l face : & australians  & and if we are ready and \\
+  14 &                                  & australia    & is faced with a double peril \\
+  15 &          compulsory unionism for & australia    & is a published objective of \\
+  16 &      that will lead to a greater & australia    & , to greater happiness for \\
+  17 &                           it was & australia    & 's pride that she created such \\
+  18 &      do not make the best use of & australian   & conditions \\
+  19 &      make the happiness of every & australian   & their foremost aim \\
+
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{\emph{Australia}, 1982}
+\begin{table}
+\tiny
+\begin{tabular}{lrll}
+   0 &   fortieth anniversary of one of & australia   & 's most critical moments in \\
+   1 &              which the people of & australia   & entrusted to the commonwealth \\
+   2 &                                  & australia   & will also take early delivery \\
+   3 &        intends to make sure that & australia   & is fully equipped to \\
+   4 &     of importance to everyone in & australia   & that i should like to run over \\
+   5 &   recession which is now hitting & australia   & hard \\
+   6 &                                  & australia   & does not function in isolation \\
+   7 &       , this is not surprising , & australia   & and the european countries \\
+   8 &            flights over northern & australia   & , the government has made sure \\
+   9 &        whichever are now hitting & australia   & hard \\
+  10 &    hayden 's tactic , the entire & australian  & community has a right to know \\
+  11 &    loss of confidence by average & australians & in the fairness of the system \\
+  12 &     wage demands , for restoring & australia   & 's ability to compete in \\
+  13 &         realistic in relation to & australia   & 's strategic situation in the \\
+  14 &                                  & australia   & 's athletes deserve the \\
+  15 &   providing 1.5 million to the  & australian   & olympic federation for the \\
+  16 &     for people in a country like & australia   & , rich in nat resources - with \\
+  17 &     is second-hand or obsolete , & australia   & is able to obtain a defence \\
+  18 &     1982 next saturday , i leave & australia   & for a short but most important \\
+  19 &                                  & australia   & 's participation in the \\
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Where to from here?}
+	
+	\begin{itemize}
+	\item Get the data cleaned up and well-archived
+	\item A more complete and systematic analysis
+	\item Understand the co-evolution of Australian history and Fraser's language use
+	\begin{itemize}
+	\item \emph{Who shifted? Australia or Fraser?}
+	\end{itemize}
+	\end{itemize}
+\end{frame}
+
+
+
+
+	\begin{frame}[t,allowframebreaks]
+	\frametitle{References}
+	\bibliographystyle{apacite}
+	\bibliography{references/libwin}
+	\end{frame}
+	
+	\end{document}
