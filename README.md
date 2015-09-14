@@ -7,14 +7,6 @@
 
 This is the repository for teaching materials and additional resources used by Research Platforms Services to teach *Python*, *IPython* and the *Natural Language Toolkit* (*NLTK*).
 
-All the materials used in NLTK workshops are in this repository. In fact, cloning this repository will be our first activity together as a group. To do that, just open your terminal and type/paste:
-
-```shell
-git clone https://github.com/resbaz/nltk.git
-```
-
-Though we'll be working with blank notebooks in our training sessions, everthing we cover lives as a complete notebook in the `resources/completed-notebooks` directory. These notebooks are useful for remembering or extending what you learned in during training. Alternatively, they may be useful for those who cannot attend our sessions face-to-face.
-
 Below is a basic overview of the four-session lesson plan. You can click the headings to view complete versions of the IPython Notebooks we'll be using in each sessions. The materials are always evolving, and pull requests are always welcome.
 
 ## [Session 1: Orientation](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-1.ipynb)
@@ -68,7 +60,7 @@ We'll leave some time at the end of this session for exploring the Fraser Corpus
 
 ## [Session 4: Getting the most out of what we've learned](http://nbviewer.ipython.org/github/resbaz/nltk/blob/master/resources/completed-notebooks/session-4.ipynb)
 
-So, we've learned some great skills! But, we need to know how to put these skills into practice within our own work. In this final session, we discuss:
+So, we've learned some great skills! But we need to know how to put these skills into practice within our own work. In this final session, we discuss:
 
 * What kind(s) of data we're all working with
 * Storing your data and results
